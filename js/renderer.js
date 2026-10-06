@@ -72,12 +72,13 @@ class AnimationRenderer {
    * @returns {{totalDuration: number, events: Array}}
    */
   buildTimeline(messages) {
-    let currentTime = 0.5; // start after 0.5s pause
+    let currentTime = 0.2; // brief 0.2s initial pause
     const events = [];
 
     for (let i = 0; i < messages.length; i++) {
       const msg = messages[i];
-      const typingDelay = Math.max(0.1, isNaN(parseFloat(msg.delay)) ? 0.2 : parseFloat(msg.delay));
+      const msgDelay = Math.max(0.05, isNaN(parseFloat(msg.delay)) ? 0.2 : parseFloat(msg.delay));
+      const typingDelay = Math.min(0.2, msgDelay);
 
       // 1. Typing event
       events.push({
@@ -98,11 +99,11 @@ class AnimationRenderer {
 
       // 2. Message appear event
       const appearTime = currentTime;
-      let duration = 1.6; // default pause before next message
+      let duration = msgDelay;
 
       if (msg.type === 'voice') {
         const audioDuration = parseFloat(msg.audioDuration) || 3.0;
-        duration = audioDuration + 0.8;
+        duration = audioDuration + msgDelay;
       }
 
       events.push({
@@ -116,7 +117,7 @@ class AnimationRenderer {
       currentTime += duration;
     }
 
-    const totalDuration = currentTime + 1.2; // 1.2s outro pause
+    const totalDuration = currentTime + 0.3; // brief 0.3s outro pause
     return { totalDuration, events };
   }
 

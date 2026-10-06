@@ -2563,7 +2563,7 @@ class WhatsAppStudioApp {
           text: 'Bro. Did you touch the leftover pepperoni pizza in the fridge?? 🍕👀',
           time: '11:15 PM',
           status: 'read',
-          delay: 0.8,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         },
@@ -2574,7 +2574,7 @@ class WhatsAppStudioApp {
           text: 'Uhh... maybe one slice? I was starving after the gym lol',
           time: '11:16 PM',
           status: 'read',
-          delay: 1.2,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         },
@@ -2585,7 +2585,7 @@ class WhatsAppStudioApp {
           text: 'One slice?! The entire box is empty! You even ate the garlic dip! You owe me a whole large pizza right now!',
           time: '11:16 PM',
           status: 'read',
-          delay: 1.5,
+          delay: 0.2,
           audioDuration: 4.2,
           waveform: AudioManager.generateRealisticWaveform(32)
         },
@@ -2596,7 +2596,7 @@ class WhatsAppStudioApp {
           text: 'Ordering Dominoes with double cheese right now please don\'t kill me 😂🙏',
           time: '11:17 PM',
           status: 'read',
-          delay: 1.2,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         }
@@ -2613,7 +2613,7 @@ class WhatsAppStudioApp {
           text: 'Did the venture fund partner email back after our demo call??',
           time: '2:30 PM',
           status: 'read',
-          delay: 0.9,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         },
@@ -2624,7 +2624,7 @@ class WhatsAppStudioApp {
           text: 'Open the attachment I just sent... they wired the term sheet!! 🚀🎉',
           time: '2:31 PM',
           status: 'read',
-          delay: 1.1,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         },
@@ -2635,7 +2635,7 @@ class WhatsAppStudioApp {
           text: 'No way!! Are you serious?! We actually closed the seed round! Call the team right now, we are celebrating tonight!',
           time: '2:31 PM',
           status: 'read',
-          delay: 1.4,
+          delay: 0.2,
           audioDuration: 4.0,
           waveform: AudioManager.generateRealisticWaveform(32)
         }
@@ -2652,7 +2652,7 @@ class WhatsAppStudioApp {
           text: 'Are you still downstairs in the kitchen?',
           time: '3:04 AM',
           status: 'read',
-          delay: 1.2,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         },
@@ -2663,7 +2663,7 @@ class WhatsAppStudioApp {
           text: 'No... I’ve been asleep in my bed for hours. Why?',
           time: '3:05 AM',
           status: 'read',
-          delay: 1.5,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         },
@@ -2674,7 +2674,7 @@ class WhatsAppStudioApp {
           text: 'Stay in your room and lock the door right now. Someone is walking up the stairs...',
           time: '3:05 AM',
           status: 'read',
-          delay: 2.0,
+          delay: 0.2,
           audioDuration: 4.5,
           waveform: AudioManager.generateRealisticWaveform(32)
         }
@@ -2692,7 +2692,7 @@ class WhatsAppStudioApp {
           text: 'Hey! Loved the initial animated chat mockup for our ad campaign!',
           time: '4:15 PM',
           status: 'read',
-          delay: 0.8,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         },
@@ -2703,7 +2703,7 @@ class WhatsAppStudioApp {
           text: 'Just one small note: can we export it with a transparent background so our editor can place it directly over the video footage in Premiere?',
           time: '4:16 PM',
           status: 'read',
-          delay: 1.4,
+          delay: 0.2,
           audioDuration: 4.5,
           waveform: AudioManager.generateRealisticWaveform(32)
         },
@@ -2714,7 +2714,7 @@ class WhatsAppStudioApp {
           text: 'Already done! Exported as 4K transparent WebM & PNG sequence ready for your timeline. Sending now! 👍',
           time: '4:17 PM',
           status: 'read',
-          delay: 1.2,
+          delay: 0.2,
           audioDuration: 0,
           waveform: []
         }
