@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Animated Voice & Chat Video Studio</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+</head>
+<body class="theme-light">
+
+  <!-- Main Studio Header -->
+  <header class="studio-header">
+    <div class="brand">
+      <div class="brand-icon">💬</div>
+      <div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <h1 class="brand-title">WhatsApp Animation Studio</h1>
+          <span class="brand-badge">Voice & 4K Ready</span>
+        </div>
+        <div style="font-size:0.75rem; color:var(--studio-muted);">Create animated WhatsApp dialogues with synchronized ElevenLabs (v4) AI voice notes</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline btn-sm" id="toggleSidebarBtn" title="Toggle Sidebar (Ctrl+B)">
+        <span>◀</span> <span class="sidebar-toggle-text">Sidebar</span>
+      </button>
+      <button class="btn btn-outline btn-sm" id="openTemplatesBtn">
+        <span>⚡</span> Presets
+      </button>
+      <button class="btn btn-outline btn-sm" id="openSheetsModalBtn">
+        <span>📊</span> Sheets / CSV
+      </button>
+      <button class="btn btn-outline btn-sm" id="openAppearanceBtn">
+        <span>🎨</span> Contact Look &amp; Styles
+      </button>
+      <button class="btn btn-secondary btn-sm" id="openVoiceSettingsBtn">
+        <span>🎙️</span> ElevenLabs AI Voices (v4 / v3)
+      </button>
+      <button class="btn btn-primary" id="openExportModalBtn">
+        <span>🚀</span> Export 4K / Video
+      </button>
+    </div>
+  </header>
+
+  <!-- Studio Workspace Container -->
+  <main class="studio-container" id="studioContainer">
+    <!-- Floating toggle button to reopen collapsed sidebar -->
+    <button id="expandSidebarFloatingBtn" class="floating-sidebar-toggle" title="Expand Sidebar (Ctrl+B)" type="button">
+      <span>💬</span> Pipeline (<span id="floatingMsgCount">5</span>) <span>▶</span>
+    </button>
+    <!-- Mobile Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    
+    <!-- LEFT PANEL: Conversation Sequence Pipeline -->
+    <section class="pipeline-panel" id="pipelinePanel">
+      <div class="pipeline-toolbar">
+        <div class="toolbar-title-row">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span class="toolbar-title">Message Sequence Pipeline</span>
+            <span id="msgCountBadge" class="type-pill">5 Messages</span>
+          </div>
+          <button id="collapseSidebarBtn" class="btn btn-outline btn-sm" title="Collapse Sidebar" type="button" style="padding:0.2rem 0.5rem; font-size:0.75rem;">
+            <span>◀</span>
+          </button>
+        </div>
+        <div class="toolbar-actions-row">
+          <button class="btn btn-secondary btn-sm" id="addSenderTextBtn">
+            <span>+</span> Sender (Green)
+          </button>
+          <button class="btn btn-secondary btn-sm" id="addReceiverTextBtn">
+            <span>+</span> Receiver (White)
+          </button>
+          <button class="btn btn-primary btn-sm" id="addVoiceNoteBtn">
+            <span>🎙️</span> + Voice Note
+          </button>
+        </div>
+
+        <!-- Audio Prompt Tags Quick-Bar for Sidebar -->
+        <div class="audio-tags-quick-bar">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.72rem; font-weight:700; color:#c084fc; display:flex; align-items:center; gap:0.3rem;">
+              <span>🏷️</span> ElevenLabs (v4) Audio Tags:
+            </span>
+            <span style="font-size:0.65rem; color:var(--studio-muted);">Click to copy tag</span>
+          </div>
+          <div class="audio-tags-chips-container">
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[whispering]" title="Whisper vocal tone">🤫 [whispering]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[shouting]" title="Loud / shouting tone">📢 [shouting]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[laughing]" title="Laughing while speaking">😂 [laughing]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[sighs]" title="Audible sigh">😮‍💨 [sighs]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[gasping]" title="Shocked gasp">😱 [gasping]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[excited]" title="High energy / excitement">🤩 [excited]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[angry]" title="Frustrated / intense anger">😡 [angry]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[crying]" title="Sobbing or weeping">😢 [crying]</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[pause]" title="Dramatic pause">⏸️ [pause]</button>
+          </div>
+        </div>
+
+        <!-- Character Voiceover Personas Bar -->
+        <div class="voice-personas-bar" style="background:#090d16; border:1px solid #334155; border-radius:8px; padding:0.6rem; display:flex; flex-direction:column; gap:0.45rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.75rem; font-weight:700; color:var(--studio-muted); text-transform:uppercase;">🎭 Character Personas</span>
+            <button class="btn btn-primary btn-sm" id="batchGenAllVoicesBtn" style="padding:0.2rem 0.5rem; font-size:0.72rem;">
+              <span>⚡</span> Gen All Audio
+            </button>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+            <div class="form-control-compact">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+                <label class="input-label" style="color:#4ade80; font-size:0.72rem; font-weight:600; display:flex; align-items:center; gap:0.35rem; margin:0;">
+                  <span id="personaSenderAvatarChip" class="persona-avatar-chip" title="Sender Profile Photo">M</span>
+                  🟢 Sender (Person A)
+                </label>
+                <button type="button" id="openSenderPhotoBtn" title="Set Sender Profile Photo" style="background:none; border:none; color:#4ade80; font-size:0.68rem; cursor:pointer; padding:0; text-decoration:underline;">📷 Photo</button>
+              </div>
+              <select id="personaSenderVoiceSelect" class="form-control-compact" style="background:#1e293b; color:#fff; border:1px solid #334155;"></select>
+            </div>
+            <div class="form-control-compact">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+                <label class="input-label" style="color:#38bdf8; font-size:0.72rem; font-weight:600; display:flex; align-items:center; gap:0.35rem; margin:0;">
+                  <span id="personaReceiverAvatarChip" class="persona-avatar-chip receiver" title="Receiver Profile Photo">S</span>
+                  🔵 Receiver (Person B)
+                </label>
+                <button type="button" id="openReceiverPhotoBtn" title="Set Receiver Profile Photo" style="background:none; border:none; color:#38bdf8; font-size:0.68rem; cursor:pointer; padding:0; text-decoration:underline;">📷 Photo</button>
+              </div>
+              <select id="personaReceiverVoiceSelect" class="form-control-compact" style="background:#1e293b; color:#fff; border:1px solid #334155;"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrollable Message List -->
+      <div class="pipeline-messages-list" id="pipelineMessagesList">
+        <!-- Dynamically rendered cards -->
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Live Phone Simulator & Animation Preview -->
+    <section class="preview-panel">
+      <!-- Playback Controls -->
+      <div class="preview-controls-bar">
+        <div class="playback-buttons">
+          <button class="btn btn-primary btn-sm" id="playPauseBtn">
+            <span id="playIcon">▶</span> Play
+          </button>
+          <button class="btn btn-outline btn-sm" id="restartBtn">
+            <span>↺</span> Restart
+          </button>
+        </div>
+
+        <div class="scrubber-container">
+          <span class="time-display" id="currentTimeDisplay">00:00.0</span>
+          <input type="range" class="scrubber-slider" id="timelineScrubber" min="0" max="100" value="0" step="0.1">
+          <span class="time-display" id="totalDurationDisplay">00:00.0</span>
+        </div>
+
+        <div class="viewport-options">
+          <select id="playbackSpeedSelect" class="form-control-compact" style="background:#1e293b; color:#fff; border:1px solid #334155; padding:0.3rem 0.5rem; border-radius:6px;">
+            <option value="0.5">0.5x Speed</option>
+            <option value="1.0" selected>1.0x Speed</option>
+            <option value="1.5">1.5x Speed</option>
+            <option value="2.0">2.0x Speed</option>
+          </select>
+          <button class="btn btn-outline btn-sm" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+            <span id="themeIcon">🌙</span>
+          </button>
+          <button class="btn btn-outline btn-sm" id="frameToggleBtn" title="Toggle Phone Frame or Edge-to-Edge Screen">
+            <span>📱</span> Phone Frame: ON
+          </button>
+          <button class="btn btn-primary btn-sm" id="exportFromPreviewBtn" style="background:linear-gradient(135deg,#22c55e,#16a34a); border:none; padding:0.35rem 0.8rem; font-weight:600; display:flex; align-items:center; gap:0.4rem;" title="Export total chat animation to MP4 video">
+            <span>⚡</span> Export Video (MP4)
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Stage with Phone Mockup -->
+      <div class="preview-stage" id="previewStage">
+        <div class="phone-mockup" id="phoneMockup">
+          <div class="phone-screen" id="phoneScreen">
+            <!-- Wallpaper Layer -->
+            <div class="wa-wallpaper-layer" id="waWallpaper"></div>
+
+            <!-- Top Phone Status Bar -->
+            <div class="wa-status-bar" id="waStatusBar">
+              <span id="statusBarClock">9:41</span>
+              <div class="dynamic-island"></div>
+              <div style="display:flex; align-items:center; gap:5px; font-size:0.7rem;">
+                <span>5G</span>
+                <span>📶</span>
+                <span>🔋 98%</span>
+              </div>
+            </div>
+
+            <!-- WhatsApp Header Bar -->
+            <div class="wa-header" id="waHeader">
+              <div class="wa-header-left">
+                <div class="wa-back-btn">‹ 12</div>
+                <div class="wa-contact-avatar" id="headerAvatar" style="cursor:pointer;" title="Click to customize contact photo &amp; look">S</div>
+                <div class="wa-contact-info" style="cursor:pointer;" title="Click to customize contact look">
+                  <div class="wa-contact-name" id="headerContactName">Sarah Jenkins</div>
+                  <div class="wa-contact-status" id="headerContactStatus">online</div>
+                </div>
+              </div>
+              <div class="wa-header-icons">
+                <span>📹</span>
+                <span>📞</span>
+                <span>⋮</span>
+              </div>
+            </div>
+
+            <!-- Chat Viewport -->
+            <div class="wa-chat-viewport" id="waChatViewport">
+              <!-- End-to-end encryption notification -->
+              <div class="wa-encrypted-badge">
+                🔒 Messages and calls are end-to-end encrypted. No one outside of this chat can read or listen to them.
+              </div>
+
+              <!-- Today Date Pill -->
+              <div class="wa-date-pill">TODAY</div>
+
+              <!-- Dynamic message container -->
+              <div class="wa-messages-container" id="activeMessagesContainer">
+                <!-- Message bubbles appended in real-time -->
+              </div>
+
+              <!-- Typing Indicator Bubble -->
+              <div class="wa-typing-bubble" id="typingBubble" style="display:none;">
+                <span class="wa-typing-dot"></span>
+                <span class="wa-typing-dot"></span>
+                <span class="wa-typing-dot"></span>
+              </div>
+            </div>
+
+            <!-- Bottom Input Bar -->
+            <div class="wa-bottom-bar">
+              <button class="wa-mic-round-btn" style="font-size:1.1rem; border:none; cursor:default;">➕</button>
+              <div class="wa-input-pill">
+                <span>Message</span>
+                <span style="margin-left:auto; opacity:0.6;">📷</span>
+              </div>
+              <div class="wa-mic-round-btn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                  <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                </svg>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: Export 4K / Video / PNG Sequences -->
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Export Final Video (Full Chat Animation)</div>
+        <button class="btn btn-outline btn-sm close-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Export Format</label>
+          <select id="exportFormatSelect">
+            <option value="mp4" selected>MP4 Video (.mp4 - Universal H.264 Audio & Smooth 60/30fps Animation)</option>
+            <option value="transparent_video">Transparent MOV / WebM (Alpha Channel for Premiere / DaVinci / Final Cut)</option>
+            <option value="png_sequence">PNG Image Sequence ZIP (Crisp 4K, Zero Quality Loss, Any Timeline)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Resolution & Aspect Ratio</label>
+          <select id="exportResolutionSelect">
+            <option value="1080x1920" selected>9:16 Vertical FHD (1080 x 1920) - YouTube Shorts, TikTok, Reels (Fast & Crisp)</option>
+            <option value="2160x3840">9:16 Vertical 4K Ultra HD (2160 x 3840) - Maximum Sharpness</option>
+            <option value="1920x1080">16:9 Landscape FHD (1920 x 1080) - YouTube Standard</option>
+            <option value="3840x2160">16:9 Landscape 4K UHD (3840 x 2160) - 4K Long-Form Video</option>
+            <option value="1080x1080">1:1 Square FHD (1080 x 1080) - Instagram Feed</option>
+            <option value="2160x2160">1:1 Square 4K (2160 x 2160)</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label>Frame Rate</label>
+            <select id="exportFpsSelect">
+              <option value="30" selected>30 FPS (Standard & Fast)</option>
+              <option value="60">60 FPS (Ultra Smooth Motion)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Background Fill</label>
+            <select id="exportBackgroundSelect">
+              <option value="wallpaper">WhatsApp Wallpaper & Studio Stage (Like Preview)</option>
+              <option value="transparent">Transparent (Alpha Channel)</option>
+              <option value="green_screen">Green Screen (#00FF00 Chroma Key)</option>
+              <option value="solid">Solid Background Color</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Phone Frame & Chassis Mode</label>
+          <select id="exportPhoneFrameSelect">
+            <option value="true" selected>📱 Smartphone Mockup (Realistic Titanium Chassis, Bezels & Dynamic Island)</option>
+            <option value="false">📱 Edge-to-Edge Mobile Screen (Full Screen 9:16 with WhatsApp UI & Status Bar)</option>
+          </select>
+        </div>
+
+        <!-- Export Progress Status Box -->
+        <div class="progress-box" id="exportProgressBox" style="display:none;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
+            <span id="exportStatusText" style="font-weight:600; color:var(--studio-accent);">Rendering frames...</span>
+            <span id="exportPercentText" style="font-family:monospace;">0%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="exportProgressBar"></div>
+          </div>
+          <div id="exportFrameStats" style="font-size:0.75rem; color:var(--studio-muted);">Frame 0 / 0</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary close-modal-btn" id="cancelExportBtn">Cancel</button>
+        <button class="btn btn-primary" id="startExportBtn">
+          <span>⚡</span> Start Render & Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Style, Contact & Appearance Settings -->
+  <div class="modal-overlay" id="appearanceModal">
+    <div class="modal-card modal-card-lg" style="max-height:90vh; display:flex; flex-direction:column;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.3rem;">🎨</span>
+          <div>
+            <div class="modal-title">Customize Contact Look &amp; Appearance</div>
+            <div style="font-size:0.72rem; color:var(--studio-muted);">Profile photos for Contact, Sender (Person A), Receiver (Person B), colors &amp; themes</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm close-modal-btn">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y:auto; flex:1;">
+        
+        <!-- PROFILE PHOTOS SECTION -->
+        <div class="form-section-box" style="background:#090d16; border:1px solid #1e293b; border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:0.9rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.15rem;">👤</span>
+              <div>
+                <div style="font-weight:700; font-size:0.9rem; color:#f8fafc;">Profile Photos &amp; Avatars</div>
+                <div style="font-size:0.72rem; color:var(--studio-muted);">Upload custom pictures or select preset avatars for the chat header and voice notes</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:0.9rem;">
+            
+            <!-- 1. Contact Look (Header) Photo -->
+            <div class="avatar-card" style="background:#111827; border:1px solid #1f2937; border-radius:10px; padding:0.9rem; display:flex; flex-direction:column; gap:0.65rem;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:0.8rem; font-weight:700; color:#38bdf8;">📸 Contact Look (Header)</span>
+                <span style="font-size:0.68rem; color:var(--studio-muted);">Top App Bar</span>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="position:relative; width:52px; height:52px; border-radius:50%; background:#00a884; flex-shrink:0; overflow:hidden; border:2px solid #38bdf8; display:flex; align-items:center; justify-content:center;">
+                  <div id="contactAvatarPreview" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.3rem; color:#fff;">S</div>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:0.35rem;">
+                  <label class="btn btn-primary btn-sm" style="margin:0; cursor:pointer; font-size:0.74rem; text-align:center; display:flex; align-items:center; justify-content:center; gap:0.3rem;">
+                    <span>📁</span> Upload Photo
+                    <input type="file" id="uploadContactAvatarInput" accept="image/*" style="display:none;">
+                  </label>
+                  <button type="button" class="btn btn-outline btn-sm" id="removeContactAvatarBtn" style="font-size:0.7rem; padding:0.2rem 0.4rem; color:#ef4444; border-color:rgba(239,68,68,0.4);">✕ Remove Photo</button>
+                </div>
+              </div>
+
+              <div class="form-control-compact">
+                <label class="input-label" style="font-size:0.7rem;">Or Image URL</label>
+                <input type="text" id="contactAvatarUrlInput" placeholder="https://.../photo.jpg" style="font-size:0.75rem;">
+              </div>
+
+              <div>
+                <div style="font-size:0.68rem; color:var(--studio-muted); margin-bottom:0.25rem;">Quick Presets:</div>
+                <div class="preset-avatar-row" data-target="contact" style="display:flex; gap:0.35rem; flex-wrap:wrap;"></div>
+              </div>
+            </div>
+
+            <!-- 2. Sender (Person A) Photo -->
+            <div class="avatar-card" style="background:#111827; border:1px solid #1f2937; border-radius:10px; padding:0.9rem; display:flex; flex-direction:column; gap:0.65rem;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:0.8rem; font-weight:700; color:#4ade80;">🟢 Sender (Person A)</span>
+                <span style="font-size:0.68rem; color:var(--studio-muted);">Green Bubble Voice</span>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="position:relative; width:52px; height:52px; border-radius:50%; background:#1e7e34; flex-shrink:0; overflow:hidden; border:2px solid #4ade80; display:flex; align-items:center; justify-content:center;">
+                  <div id="senderAvatarPreview" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.3rem; color:#fff;">M</div>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:0.35rem;">
+                  <label class="btn btn-primary btn-sm" style="margin:0; cursor:pointer; font-size:0.74rem; text-align:center; display:flex; align-items:center; justify-content:center; gap:0.3rem; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border-color:#10b981;">
+                    <span>📁</span> Upload Photo
+                    <input type="file" id="uploadSenderAvatarInput" accept="image/*" style="display:none;">
+                  </label>
+                  <button type="button" class="btn btn-outline btn-sm" id="removeSenderAvatarBtn" style="font-size:0.7rem; padding:0.2rem 0.4rem; color:#ef4444; border-color:rgba(239,68,68,0.4);">✕ Remove Photo</button>
+                </div>
+              </div>
+
+              <div class="form-control-compact">
+                <label class="input-label" style="font-size:0.7rem;">Or Image URL</label>
+                <input type="text" id="senderAvatarUrlInput" placeholder="https://.../photo.jpg" style="font-size:0.75rem;">
+              </div>
+
+              <div>
+                <div style="font-size:0.68rem; color:var(--studio-muted); margin-bottom:0.25rem;">Quick Presets:</div>
+                <div class="preset-avatar-row" data-target="sender" style="display:flex; gap:0.35rem; flex-wrap:wrap;"></div>
+              </div>
+            </div>
+
+            <!-- 3. Receiver (Person B) Photo -->
+            <div class="avatar-card" style="background:#111827; border:1px solid #1f2937; border-radius:10px; padding:0.9rem; display:flex; flex-direction:column; gap:0.65rem;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:0.8rem; font-weight:700; color:#60a5fa;">🔵 Receiver (Person B)</span>
+                <button type="button" id="syncReceiverWithContactBtn" class="btn btn-outline btn-sm" style="font-size:0.66rem; padding:0.12rem 0.35rem; color:#38bdf8; border-color:#38bdf8;" title="Copy photo from Contact Header">
+                  🔄 Sync Contact
+                </button>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="position:relative; width:52px; height:52px; border-radius:50%; background:#2563eb; flex-shrink:0; overflow:hidden; border:2px solid #60a5fa; display:flex; align-items:center; justify-content:center;">
+                  <div id="receiverAvatarPreview" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.3rem; color:#fff;">S</div>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:0.35rem;">
+                  <label class="btn btn-primary btn-sm" style="margin:0; cursor:pointer; font-size:0.74rem; text-align:center; display:flex; align-items:center; justify-content:center; gap:0.3rem; background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-color:#3b82f6;">
+                    <span>📁</span> Upload Photo
+                    <input type="file" id="uploadReceiverAvatarInput" accept="image/*" style="display:none;">
+                  </label>
+                  <button type="button" class="btn btn-outline btn-sm" id="removeReceiverAvatarBtn" style="font-size:0.7rem; padding:0.2rem 0.4rem; color:#ef4444; border-color:rgba(239,68,68,0.4);">✕ Remove Photo</button>
+                </div>
+              </div>
+
+              <div class="form-control-compact">
+                <label class="input-label" style="font-size:0.7rem;">Or Image URL</label>
+                <input type="text" id="receiverAvatarUrlInput" placeholder="https://.../photo.jpg" style="font-size:0.75rem;">
+              </div>
+
+              <div>
+                <div style="font-size:0.68rem; color:var(--studio-muted); margin-bottom:0.25rem;">Quick Presets:</div>
+                <div class="preset-avatar-row" data-target="receiver" style="display:flex; gap:0.35rem; flex-wrap:wrap;"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label>Contact Name</label>
+            <input type="text" id="settingContactName" value="Sarah Jenkins">
+          </div>
+          <div class="form-group">
+            <label>Phone Status Time</label>
+            <input type="text" id="settingPhoneTime" value="9:41 AM">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label>Sender Bubble Color (Person A)</label>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <input type="color" id="settingSenderColor" value="#d9fdd3" style="width:45px; height:38px; padding:2px; cursor:pointer;">
+              <input type="text" id="settingSenderColorHex" value="#d9fdd3" style="flex:1;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Receiver Bubble Color (Person B)</label>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <input type="color" id="settingReceiverColor" value="#ffffff" style="width:45px; height:38px; padding:2px; cursor:pointer;">
+              <input type="text" id="settingReceiverColorHex" value="#ffffff" style="flex:1;">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Chat Background Wallpaper</label>
+          <select id="settingBackgroundType">
+            <option value="doodle" selected>Official WhatsApp Doodle Pattern</option>
+            <option value="solid">Solid Color (Custom Hex)</option>
+            <option value="green_screen">Green Screen Chroma Key (#00FF00)</option>
+            <option value="transparent">Transparent (Overlay Mode)</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label>Display Phone Mockup Chassis</label>
+            <select id="settingPhoneMockupToggle">
+              <option value="true" selected>Smartphone Mockup with Bezels</option>
+              <option value="false">Clean Frameless Chat Box (No Bezel)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Audio Chime Sound Effects</label>
+            <select id="settingSfxToggle">
+              <option value="true" selected>Enabled (Pop on message sent/received)</option>
+              <option value="false">Muted (Voice notes only)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary close-modal-btn" id="saveAppearanceBtn">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ElevenLabs AI Voice Studio (eleven_v4) -->
+  <div class="modal-overlay" id="voiceSettingsModal">
+    <div class="modal-card modal-card-lg" style="max-height:90vh; display:flex; flex-direction:column;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.3rem;">🎙️</span>
+          <div>
+            <div class="modal-title">ElevenLabs AI Voices (eleven_v4)</div>
+            <div style="font-size:0.72rem; color:var(--studio-muted);">Flagship conversational AI voice synthesis with expressive audio tags &amp; pacing controls</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm close-modal-btn">✕</button>
+      </div>
+
+      <div class="modal-body" style="overflow-y:auto; flex:1; padding-top:1rem;">
+        
+        <!-- ELEVENLABS (eleven_v4) -->
+        <div id="panelElevenLabs" class="engine-panel" style="display:block;">
+          <!-- Model Selection (eleven_v4 emphasized) -->
+          <div style="background:rgba(168, 85, 247, 0.1); border:1px solid rgba(168, 85, 247, 0.3); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; font-size:0.78rem;">
+            <div style="font-weight:700; color:#c084fc; margin-bottom:0.25rem;">
+              ✨ Using ElevenLabs Flagship Model: <code>eleven_v4</code>
+            </div>
+            <div style="color:var(--studio-text);">
+              <strong>eleven_v4</strong> delivers state-of-the-art conversational emotional depth, expressive audio prompt tags (<code>[whispering]</code>, <code>[shouting]</code>, <code>[laughing]</code>, etc.), and multilingual support.
+            </div>
+          </div>
+
+          <!-- API Key & Connection -->
+          <div class="form-group">
+            <label>ElevenLabs API Key (<code>xi-api-key</code>)</label>
+            <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+              <input type="password" id="elevenLabsApiKeyInput" placeholder="xi-api-key-..." style="flex:1; min-width:200px;">
+              <button class="btn btn-secondary btn-sm" id="fetchAllVoicesBtn" type="button">
+                <span>🔄</span> Fetch My Voices
+              </button>
+              <button class="btn btn-primary btn-sm" id="openVoiceLibraryModalBtn" type="button" style="background:linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border-color:#818cf8; white-space:nowrap;">
+                <span>📚</span> Browse Voice Library
+              </button>
+              <span id="elevenConnectionStatus" style="font-size:0.8rem; white-space:nowrap; padding:0.2rem 0.5rem; border-radius:4px; background:#1e293b;">⚪ No Key</span>
+            </div>
+            <div id="voiceFetchStatus" style="font-size:0.74rem; color:var(--studio-muted); margin-top:0.25rem;">
+              Enter your API key and click "Fetch My Voices" or "Browse Voice Library" to explore community voices.
+            </div>
+          </div>
+
+          <!-- Model & Custom Voice ID -->
+          <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label>ElevenLabs Model</label>
+              <select id="elevenLabsModelSelect">
+                <option value="eleven_v4" selected>🔥 Eleven v4 (Latest Flagship &bull; Expressive Audio Tags &amp; Emotion)</option>
+                <option value="eleven_v3">⚡ Eleven v3 (Flagship &bull; 70+ Languages &bull; Expressive)</option>
+                <option value="eleven_v3_conversational">⚡ Eleven v3 Conversational (Real-time Dialog &bull; ~280ms)</option>
+                <option value="eleven_multilingual_v2">🌐 Eleven Multilingual v2 (29 Languages &bull; Stable)</option>
+                <option value="eleven_flash_v2_5">⚡ Eleven Flash v2.5 (Fastest Real-time &bull; ~75ms)</option>
+                <option value="eleven_flash_v2">⚡ Eleven Flash v2 (Ultra-low Latency)</option>
+                <option value="eleven_turbo_v2_5">🚀 Eleven Turbo v2.5 (High Quality &amp; Speed)</option>
+                <option value="eleven_turbo_v2">🚀 Eleven Turbo v2 (Fast English &amp; Multilingual)</option>
+                <option value="eleven_multilingual_v1">📜 Eleven Multilingual v1 (Classic Generation)</option>
+                <option value="eleven_monolingual_v1">📜 Eleven English v1 (Classic English)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Custom Voice ID (Optional)</label>
+              <input type="text" id="customVoiceIdInput" placeholder="Paste specific voice_id...">
+            </div>
+          </div>
+
+          <!-- Direct Voice Library Import Bar -->
+          <div style="background:rgba(99, 102, 241, 0.08); border:1px dashed rgba(99, 102, 241, 0.4); border-radius:8px; padding:0.6rem 0.8rem; margin-bottom:0.75rem; display:flex; gap:0.6rem; align-items:center;">
+            <span style="font-size:1.1rem;">🔗</span>
+            <div style="flex:1;">
+              <div style="font-size:0.72rem; color:var(--studio-muted); margin-bottom:0.2rem;">
+                Direct link from <a href="https://elevenlabs.io/app/voice-library" target="_blank" style="color:#c084fc; text-decoration:underline;">elevenlabs.io/app/voice-library</a> or Voice ID:
+              </div>
+              <input type="text" id="voiceLibraryUrlInput" placeholder="e.g. https://elevenlabs.io/app/voice-library/voice/... or onwK4e9ZLuTAKqWW03F9" style="font-size:0.75rem; width:100%;">
+            </div>
+            <button class="btn btn-primary btn-sm" id="importVoiceLibraryBtn" type="button" style="font-size:0.75rem; white-space:nowrap; margin-top:0.8rem;">
+              ⚡ Load from Library
+            </button>
+          </div>
+
+          <!-- Filter & Search -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label>Filter ElevenLabs Voices</label>
+              <select id="elevenCategoryFilter">
+                <option value="all">All Available Voices</option>
+                <option value="custom">🌟 My Custom &amp; Cloned Voices</option>
+                <option value="indian">🇮🇳 Indian Voices</option>
+                <option value="premade">🌍 Global Library Voices</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Search Voice Name</label>
+              <input type="text" id="elevenSearchInput" placeholder="Type voice name...">
+            </div>
+          </div>
+
+          <!-- Voice Select & Preview -->
+          <div class="form-group">
+            <label>Select ElevenLabs Voice</label>
+            <div style="display:flex; gap:0.5rem; align-items:stretch;">
+              <select id="elevenLabsVoiceSelect" size="5" style="flex:1; height:130px; font-family:inherit;">
+                <!-- Populated dynamically with optgroups -->
+              </select>
+              <div style="display:flex; flex-direction:column; gap:0.4rem;">
+                <button class="btn btn-outline btn-sm" id="previewElevenVoiceBtn" type="button" title="Preview selected voice">🔊 Preview</button>
+                <button class="btn btn-outline btn-sm" id="stopElevenPreviewBtn" type="button" title="Stop preview">⏹ Stop</button>
+              </div>
+            </div>
+            <div id="selectedElevenVoiceInfo" style="font-size:0.72rem; color:var(--studio-muted); margin-top:0.25rem;"></div>
+          </div>
+
+          <!-- Sliders: Stability, Similarity, Style -->
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label>Stability <span id="stabilityValueLabel" style="float:right; font-size:0.72rem; color:var(--studio-muted);">0.50</span></label>
+              <input type="range" id="voiceStabilitySlider" min="0" max="1" step="0.05" value="0.5">
+              <small style="color:var(--studio-muted); font-size:0.68rem;">Consistency vs expressive variance</small>
+            </div>
+            <div class="form-group">
+              <label>Similarity <span id="similarityValueLabel" style="float:right; font-size:0.72rem; color:var(--studio-muted);">0.75</span></label>
+              <input type="range" id="voiceSimilaritySlider" min="0" max="1" step="0.05" value="0.75">
+              <small style="color:var(--studio-muted); font-size:0.68rem;">Fidelity to original voice</small>
+            </div>
+            <div class="form-group">
+              <label>Style <span id="styleValueLabel" style="float:right; font-size:0.72rem; color:var(--studio-muted);">0.00</span></label>
+              <input type="range" id="voiceStyleSlider" min="0" max="1" step="0.05" value="0">
+              <small style="color:var(--studio-muted); font-size:0.68rem;">Style exaggeration</small>
+            </div>
+          </div>
+
+          <!-- Dialogue Delivery Speed & Pacing Section -->
+          <div style="background:rgba(99, 102, 241, 0.08); border:1px solid rgba(99, 102, 241, 0.25); border-radius:8px; padding:0.85rem 1rem; margin-top:0.75rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+              <label style="margin:0; font-weight:700; font-size:0.84rem; color:#fff; display:flex; align-items:center; gap:0.4rem;">
+                <span>⚡</span> Dialogue Delivery Speed / Speech Pacing
+              </label>
+              <span id="speedValueLabel" style="font-size:0.75rem; font-weight:700; padding:0.15rem 0.5rem; border-radius:4px; background:rgba(99, 102, 241, 0.2); color:#a5b4fc; border:1px solid rgba(99, 102, 241, 0.35);">
+                1.00x (Normal)
+              </span>
+            </div>
+            <div style="font-size:0.72rem; color:var(--studio-muted); margin-bottom:0.6rem; line-height:1.4;">
+              Adjust dialogue delivery rate for <code>eleven_v4</code> (0.70x to 1.20x). Speeds up rapid back-and-forth chat or slows down deliberate, emotional lines.
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+              <input type="range" id="voiceSpeedSlider" min="0.7" max="1.2" step="0.05" value="1.0" style="flex:1;">
+              <div style="display:flex; gap:0.3rem;">
+                <button type="button" class="btn btn-outline btn-sm speed-preset-btn" data-speed="0.80" style="padding:0.2rem 0.45rem; font-size:0.68rem;">0.80x</button>
+                <button type="button" class="btn btn-outline btn-sm speed-preset-btn active" data-speed="1.00" style="padding:0.2rem 0.45rem; font-size:0.68rem;">1.00x</button>
+                <button type="button" class="btn btn-outline btn-sm speed-preset-btn" data-speed="1.10" style="padding:0.2rem 0.45rem; font-size:0.68rem;">1.10x</button>
+                <button type="button" class="btn btn-outline btn-sm speed-preset-btn" data-speed="1.20" style="padding:0.2rem 0.45rem; font-size:0.68rem;">1.20x</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Language Override & Audio Quality Settings -->
+          <div style="background:rgba(59, 130, 246, 0.08); border:1px solid rgba(59, 130, 246, 0.25); border-radius:8px; padding:0.85rem 1rem; margin-top:0.75rem;">
+            <!-- Language Override Toggle Row (ON in default) -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="checkbox" id="elevenLanguageOverrideToggle" checked style="width:17px; height:17px; cursor:pointer; accent-color:#38bdf8;">
+                <label for="elevenLanguageOverrideToggle" style="margin:0; font-weight:700; font-size:0.84rem; color:#fff; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                  <span>🌐</span> Language Override (eleven_v4 &amp; Multilingual)
+                </label>
+              </div>
+              <span id="elevenOverrideBadge" style="font-size:0.7rem; font-weight:600; padding:0.15rem 0.5rem; border-radius:4px; background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid rgba(34, 197, 94, 0.35);">
+                🟢 ON (Default)
+              </span>
+            </div>
+            <div style="font-size:0.72rem; color:var(--studio-muted); margin-bottom:0.75rem; line-height:1.4;">
+              Strictly enforces the target language text normalization &amp; accent for <code>eleven_v4</code>. Enabled by default.
+            </div>
+
+            <!-- Language Dropdown, Code Input, and Speaker Boost -->
+            <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:0.75rem; align-items:flex-end;">
+              <div class="form-group" style="margin:0;">
+                <label style="font-size:0.75rem;">Target Language</label>
+                <select id="elevenLanguageSelect" style="font-size:0.78rem;">
+                  <option value="hi" selected>🇮🇳 Hindi (हिन्दी) &bull; hi</option>
+                  <option value="en">🇬🇧/🇺🇸 English &bull; en</option>
+                  <option value="ta">🇮🇳 Tamil (தமிழ்) &bull; ta</option>
+                  <option value="te">🇮🇳 Telugu (తెలుగు) &bull; te</option>
+                  <option value="bn">🇮🇳 Bengali (বাংলা) &bull; bn</option>
+                  <option value="mr">🇮🇳 Marathi (मराठी) &bull; mr</option>
+                  <option value="gu">🇮🇳 Gujarati (ગુજરાતી) &bull; gu</option>
+                  <option value="kn">🇮🇳 Kannada (ಕನ್ನಡ) &bull; kn</option>
+                  <option value="ml">🇮🇳 Malayalam (മലയാളം) &bull; ml</option>
+                  <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ) &bull; pa</option>
+                  <option value="es">🇪🇸 Spanish (Español) &bull; es</option>
+                  <option value="fr">🇫🇷 French (Français) &bull; fr</option>
+                  <option value="de">🇩🇪 German (Deutsch) &bull; de</option>
+                  <option value="ja">🇯🇵 Japanese (日本語) &bull; ja</option>
+                  <option value="ar">🇸🇦 Arabic (العربية) &bull; ar</option>
+                  <option value="auto">✨ Auto-Detect Script</option>
+                  <option value="custom">✍️ Custom ISO Code...</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin:0;">
+                <label style="font-size:0.75rem;">ISO-639-1 Code</label>
+                <input type="text" id="elevenLanguageCodeInput" value="hi" placeholder="e.g. hi, en, ta, te" style="font-size:0.78rem; text-transform:lowercase;">
+              </div>
+
+              <div class="form-group" style="margin:0; display:flex; align-items:center; gap:0.5rem; padding-bottom:0.4rem;">
+                <input type="checkbox" id="elevenSpeakerBoostToggle" checked style="width:16px; height:16px; cursor:pointer;">
+                <label for="elevenSpeakerBoostToggle" style="margin:0; font-size:0.78rem; cursor:pointer;">Speaker Boost</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn btn-outline" id="testElevenVoiceBtn">🔊 Test ElevenLabs (v4)</button>
+        <button class="btn btn-primary close-modal-btn" id="saveVoiceSettingsBtn">Save &amp; Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ElevenLabs Voice Library Browser (elevenlabs.io/app/voice-library) -->
+  <div class="modal-overlay" id="voiceLibraryModal">
+    <div class="modal-card modal-card-lg" style="max-height:92vh; display:flex; flex-direction:column; width:95%; max-width:980px;">
+      <div class="modal-header" style="border-bottom:1px solid var(--studio-border); padding-bottom:0.8rem;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.5rem;">📚</span>
+          <div>
+            <div class="modal-title" style="font-size:1.15rem; font-weight:700; color:#fff;">
+              ElevenLabs Voice Library Browser
+            </div>
+            <div style="font-size:0.75rem; color:var(--studio-muted);">
+              Explore community voices &amp; professional clones from <a href="https://elevenlabs.io/app/voice-library" target="_blank" style="color:#c084fc; text-decoration:underline; font-weight:600;">elevenlabs.io/app/voice-library</a> &bull; Compatible with <code>eleven_v4</code> &amp; all models
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm close-modal-btn">✕</button>
+      </div>
+
+      <div class="modal-body" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:1rem; padding:1.2rem 1.5rem;">
+        <!-- Quick Paste / Import Bar -->
+        <div style="background:rgba(168, 85, 247, 0.08); border:1px solid rgba(168, 85, 247, 0.25); border-radius:8px; padding:0.75rem 1rem; display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+          <div style="flex:1; min-width:260px;">
+            <div style="font-size:0.74rem; font-weight:600; color:#c084fc; margin-bottom:0.25rem;">
+              Direct Voice Import (Paste URL or ID from elevenlabs.io/app/voice-library):
+            </div>
+            <input type="text" id="libraryModalDirectUrlInput" placeholder="https://elevenlabs.io/app/voice-library/voice/... or 20-char Voice ID" style="width:100%; font-size:0.78rem;">
+          </div>
+          <button class="btn btn-primary btn-sm" id="libraryModalDirectImportBtn" type="button" style="margin-top:1.1rem; background:linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); white-space:nowrap;">
+            ⚡ Import &amp; Use Voice
+          </button>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; background:#131d2e; padding:0.75rem 1rem; border-radius:8px; border:1px solid #1e293b;">
+          <div style="flex:1; min-width:220px;">
+            <input type="text" id="librarySearchInput" placeholder="🔍 Search voices by name, accent, or style (e.g. Indian, Hindi, Conversational, Story)..." style="width:100%; font-size:0.78rem;">
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <select id="libraryCategoryFilter" style="font-size:0.75rem; padding:0.35rem 0.6rem; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;">
+              <option value="all">All Categories</option>
+              <option value="indian" selected>🇮🇳 Indian &amp; South Asian</option>
+              <option value="conversational">🎙️ Conversational &amp; Chat</option>
+              <option value="storytelling">📖 Storytelling &amp; Drama</option>
+              <option value="professional">🌟 Professional Voice Clones</option>
+            </select>
+            <select id="libraryGenderFilter" style="font-size:0.75rem; padding:0.35rem 0.6rem; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:4px;">
+              <option value="all">All Genders</option>
+              <option value="male">👨 Male</option>
+              <option value="female">👩 Female</option>
+            </select>
+            <button class="btn btn-outline btn-sm" id="libraryRefreshSearchBtn" type="button" style="font-size:0.75rem;">
+              🔄 Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Status & Target Model Selection -->
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--studio-muted); flex-wrap:wrap; gap:0.5rem;">
+          <span id="libraryVoiceCountText">No voices loaded</span>
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <span>Target Generation Model:</span>
+            <select id="libraryTargetModelSelect" style="font-size:0.72rem; padding:0.2rem 0.5rem; background:#0f172a; color:#c084fc; border:1px solid #475569; border-radius:4px;">
+              <option value="eleven_v4" selected>🔥 Eleven v4 (Latest Flagship • Expressive Tags)</option>
+              <option value="eleven_v3">⚡ Eleven v3 (Flagship)</option>
+              <option value="eleven_v3_conversational">⚡ Eleven v3 Conversational (~280ms)</option>
+              <option value="eleven_multilingual_v2">🌐 Eleven Multilingual v2</option>
+              <option value="eleven_flash_v2_5">⚡ Eleven Flash v2.5 (~75ms)</option>
+              <option value="eleven_turbo_v2_5">🚀 Eleven Turbo v2.5</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Voice Cards Container -->
+        <div id="voiceLibraryCardsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:0.85rem;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--studio-border);">
+        <a href="https://elevenlabs.io/app/voice-library" target="_blank" style="font-size:0.78rem; color:#38bdf8; text-decoration:underline; display:flex; align-items:center; gap:0.3rem;">
+          <span>🌐</span> Open official Voice Library at elevenlabs.io/app/voice-library ↗
+        </a>
+        <button class="btn btn-secondary close-modal-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Google Sheets & CSV Data Manager -->
+  <div class="modal-overlay" id="sheetsModal">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <div class="modal-title">Google Sheets & CSV Dialogue Pipeline</div>
+        <button class="btn btn-outline btn-sm close-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-primary btn-sm" id="downloadCsvBtn">
+              <span>📥</span> Download for Google Sheets / Excel (.csv)
+            </button>
+            <label class="btn btn-secondary btn-sm" style="margin:0; cursor:pointer;">
+              <span>📤</span> Import CSV from Sheets
+              <input type="file" id="importCsvInput" accept=".csv" style="display:none;">
+            </label>
+          </div>
+          <button class="btn btn-outline btn-sm" id="addSheetRowBtn">
+            <span>+</span> Add Row
+          </button>
+        </div>
+
+        <div class="sheet-table-wrapper">
+          <table class="sheet-table" id="interactiveSheetTable">
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th style="width:110px;">Sender</th>
+                <th style="width:90px;">Type</th>
+                <th>Message Text / Transcript</th>
+                <th style="width:85px;">Time</th>
+                <th style="width:95px;">Ticks</th>
+                <th style="width:75px;">Delay (s)</th>
+                <th style="width:50px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="sheetTableBody">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+        <small style="color:var(--studio-muted); font-size:0.75rem;">
+          💡 Tip: You can edit values directly in this table, or export the CSV to edit in Google Sheets, then import it back anytime!
+        </small>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary close-modal-btn">Cancel</button>
+        <button class="btn btn-primary" id="applySheetChangesBtn">
+          <span>✓</span> Apply Changes to Timeline
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Script Presets & Templates -->
+  <div class="modal-overlay" id="templatesModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Conversation Templates</div>
+        <button class="btn btn-outline btn-sm close-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="preset-grid">
+          <div class="preset-card" data-template="roommate">
+            <div style="font-size:1.5rem;">🍕</div>
+            <div class="preset-title">The Stolen Pizza</div>
+            <div class="preset-desc">Funny roommate dispute with an urgent voice note accusation!</div>
+          </div>
+          <div class="preset-card" data-template="startup">
+            <div style="font-size:1.5rem;">🚀</div>
+            <div class="preset-title">Startup Pitch & Investor</div>
+            <div class="preset-desc">Founder sends prototype update and excited voice note confirmation.</div>
+          </div>
+          <div class="preset-card" data-template="thriller">
+            <div style="font-size:1.5rem;">🔦</div>
+            <div class="preset-title">Late Night Mystery</div>
+            <div class="preset-desc">Whispered voice note warning about someone knocking at the door.</div>
+          </div>
+          <div class="preset-card" data-template="freelancer">
+            <div style="font-size:1.5rem;">🎨</div>
+            <div class="preset-title">Freelance Design Feedback</div>
+            <div class="preset-desc">Client voice note requesting rapid color and layout tweaks.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary close-modal-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic Scripts -->
+  <script src="js/zip.js"></script>
+  <script src="js/mp4-muxer.js"></script>
+  <script src="js/sounds-data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/elevenlabs.js"></script>
+  <script src="js/sheets.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
