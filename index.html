@@ -80,24 +80,35 @@
           </button>
         </div>
 
-        <!-- Character Voiceover Personas Bar -->
-        <div class="voice-personas-bar">
+        <!-- Character Voiceover Personas Bar (Scrollable & Responsive) -->
+        <div class="voice-personas-bar" id="voicePersonasBar">
           <div class="personas-header">
-            <div class="personas-title">
-              <span>🎭</span>
-              <span>Voice Personas</span>
+            <div class="personas-title-wrap">
+              <span class="personas-title"><span>🎭</span> Character Personas</span>
             </div>
             <button class="batch-gen-btn" id="batchGenAllVoicesBtn" type="button" title="Synthesize all voice notes in timeline">
               <span>⚡</span> Gen All Audio
             </button>
           </div>
-          <div class="personas-grid">
+
+          <!-- Persona Navigation Tabs -->
+          <div class="personas-nav-tabs">
+            <button type="button" class="persona-tab-btn active sender-tab" id="tabSenderPersona" title="View Sender Persona">
+              <span>🟢</span> Sender (Person A)
+            </button>
+            <button type="button" class="persona-tab-btn receiver-tab" id="tabReceiverPersona" title="View Receiver Persona">
+              <span>🔵</span> Receiver (Person B)
+            </button>
+          </div>
+
+          <!-- Scrollable Personas Container: Never clips text or buttons at edges -->
+          <div class="personas-scroll-container" id="personasScrollContainer">
             <!-- Sender Persona -->
-            <div class="persona-slot sender-slot">
+            <div class="persona-slot sender-slot" id="personaSlotSender">
               <div class="persona-slot-header">
                 <div class="persona-badge sender">
-                  <span id="personaSenderAvatarChip" class="persona-avatar-chip" title="Sender Profile Photo">M</span>
-                  <span class="persona-role-text">🟢 Sender</span>
+                  <span id="personaSenderAvatarChip" class="persona-avatar-chip sender" title="Sender Profile Photo">M</span>
+                  <span class="persona-role-text">🟢 Sender (Person A)</span>
                 </div>
                 <button type="button" id="openSenderPhotoBtn" class="persona-photo-btn" title="Set Sender Profile Photo">
                   <span>📷</span> Photo
@@ -107,11 +118,11 @@
             </div>
 
             <!-- Receiver Persona -->
-            <div class="persona-slot receiver-slot">
+            <div class="persona-slot receiver-slot" id="personaSlotReceiver">
               <div class="persona-slot-header">
                 <div class="persona-badge receiver">
                   <span id="personaReceiverAvatarChip" class="persona-avatar-chip receiver" title="Receiver Profile Photo">S</span>
-                  <span class="persona-role-text">🔵 Receiver</span>
+                  <span class="persona-role-text">🔵 Receiver (Person B)</span>
                 </div>
                 <button type="button" id="openReceiverPhotoBtn" class="persona-photo-btn" title="Set Receiver Profile Photo">
                   <span>📷</span> Photo

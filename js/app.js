@@ -1376,6 +1376,41 @@ class WhatsAppStudioApp {
       this.openModal(this.appearanceModal);
     });
 
+    // Persona bar navigation tabs and smooth horizontal scroll sync
+    const personasScroll = document.getElementById('personasScrollContainer');
+    const senderSlot = document.getElementById('personaSlotSender');
+    const receiverSlot = document.getElementById('personaSlotReceiver');
+    const tabSender = document.getElementById('tabSenderPersona');
+    const tabReceiver = document.getElementById('tabReceiverPersona');
+
+    tabSender?.addEventListener('click', () => {
+      personasScroll?.scrollTo({ left: 0, behavior: 'smooth' });
+      tabSender.classList.add('active');
+      tabReceiver?.classList.remove('active');
+    });
+
+    tabReceiver?.addEventListener('click', () => {
+      if (receiverSlot && personasScroll) {
+        const offset = receiverSlot.offsetLeft - personasScroll.offsetLeft;
+        personasScroll.scrollTo({ left: Math.max(0, offset), behavior: 'smooth' });
+        tabReceiver.classList.add('active');
+        tabSender?.classList.remove('active');
+      }
+    });
+
+    personasScroll?.addEventListener('scroll', () => {
+      if (!receiverSlot || !personasScroll) return;
+      const scrollPos = personasScroll.scrollLeft;
+      const targetPos = receiverSlot.offsetLeft - personasScroll.offsetLeft;
+      if (scrollPos >= targetPos / 2) {
+        tabReceiver?.classList.add('active');
+        tabSender?.classList.remove('active');
+      } else {
+        tabSender?.classList.add('active');
+        tabReceiver?.classList.remove('active');
+      }
+    }, { passive: true });
+
     // Save Appearance Button
     document.getElementById('saveAppearanceBtn')?.addEventListener('click', () => {
       localStorage.setItem('setting_contact_name', this.settings.contactName);
