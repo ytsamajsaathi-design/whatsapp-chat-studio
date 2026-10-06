@@ -77,7 +77,7 @@ class AnimationRenderer {
 
     for (let i = 0; i < messages.length; i++) {
       const msg = messages[i];
-      const typingDelay = Math.max(0.6, parseFloat(msg.delay) || 1.2);
+      const typingDelay = Math.max(0.1, isNaN(parseFloat(msg.delay)) ? 0.2 : parseFloat(msg.delay));
 
       // 1. Typing event
       events.push({

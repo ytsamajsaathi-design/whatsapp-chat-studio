@@ -26,7 +26,7 @@ class SheetsManager {
         escape(msg.text),
         escape(msg.time),
         escape(msg.status),
-        escape(msg.delay !== undefined ? msg.delay : 1.0),
+        escape(msg.delay !== undefined ? msg.delay : 0.2),
         escape(msg.voiceId || "")
       ];
       rows.push(row.join(","));
@@ -117,7 +117,7 @@ class SheetsManager {
         text: obj.text || "",
         time: obj.time || "10:45 AM",
         status: obj.status || "read", // sent, delivered, read
-        delay: parseFloat(obj.delay_seconds) || 1.2,
+        delay: !isNaN(parseFloat(obj.delay_seconds)) ? parseFloat(obj.delay_seconds) : 0.2,
         voiceId: obj.voice_id || ""
       });
     }

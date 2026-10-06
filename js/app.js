@@ -165,7 +165,7 @@ class WhatsAppStudioApp {
         text: 'Hey! Are you still at the recording studio?',
         time: '10:42 AM',
         status: 'read',
-        delay: 1.0,
+        delay: 0.2,
         audioDuration: 0,
         waveform: []
       },
@@ -176,7 +176,7 @@ class WhatsAppStudioApp {
         text: 'Yeah, just wrapping up the final master track right now! 🎧',
         time: '10:43 AM',
         status: 'read',
-        delay: 1.2,
+        delay: 0.2,
         audioDuration: 0,
         waveform: []
       },
@@ -187,7 +187,7 @@ class WhatsAppStudioApp {
         text: 'Listen to this quick hook idea before you leave, tell me what you think!',
         time: '10:44 AM',
         status: 'read',
-        delay: 1.5,
+        delay: 0.2,
         audioDuration: 3.8,
         waveform: AudioManager.generateRealisticWaveform(32)
       },
@@ -198,7 +198,7 @@ class WhatsAppStudioApp {
         text: 'Yo that sounds INSANE!! Adding the 808s right now 🔥🔥',
         time: '10:45 AM',
         status: 'read',
-        delay: 1.4,
+        delay: 0.2,
         audioDuration: 0,
         waveform: []
       }
@@ -348,37 +348,6 @@ class WhatsAppStudioApp {
         e.preventDefault();
         this.toggleSidebar();
       }
-    });
-
-    // Global Audio Tags in Sidebar Toolbar
-    document.querySelectorAll('.audio-tag-chip.global-tag').forEach(chip => {
-      chip.addEventListener('click', async () => {
-        const tag = chip.dataset.tag;
-        const activeTextarea = (document.activeElement && document.activeElement.classList.contains('msg-textarea'))
-          ? document.activeElement
-          : document.querySelector('.msg-card .msg-textarea');
-
-        if (activeTextarea) {
-          const cardEl = activeTextarea.closest('.msg-card');
-          const idx = Array.from(this.pipelineListEl.children).indexOf(cardEl);
-          const targetMsg = idx >= 0 ? this.messages[idx] : null;
-          this.insertAudioTag(activeTextarea, tag, targetMsg);
-        }
-
-        try {
-          if (navigator.clipboard) {
-            await navigator.clipboard.writeText(tag);
-          }
-        } catch (e) {}
-
-        const originalText = chip.innerText;
-        chip.classList.add('copied');
-        chip.innerText = '✅ ' + tag;
-        setTimeout(() => {
-          chip.classList.remove('copied');
-          chip.innerText = originalText;
-        }, 1200);
-      });
     });
 
     window.addEventListener('resize', () => {
@@ -1790,7 +1759,7 @@ class WhatsAppStudioApp {
         text: 'New message',
         time: '10:46 AM',
         status: 'read',
-        delay: 1.0,
+        delay: 0.2,
         audioDuration: 0,
         waveform: []
       });
@@ -1864,7 +1833,7 @@ class WhatsAppStudioApp {
       text: type === 'voice' ? 'Hey, check out this voice message!' : 'Hello there!',
       time: timeString,
       status: 'read',
-      delay: 1.2,
+      delay: 0.2,
       audioDuration: type === 'voice' ? 3.5 : 0,
       waveform: type === 'voice' ? AudioManager.generateRealisticWaveform(32) : []
     };
@@ -1976,7 +1945,7 @@ class WhatsAppStudioApp {
           </div>
           <div class="card-footer-col">
             <label class="footer-label">Delay (s)</label>
-            <input type="number" step="0.1" min="0.2" max="10" class="msg-delay-input footer-input" value="${msg.delay}">
+            <input type="number" step="0.1" min="0" max="10" class="msg-delay-input footer-input" value="${msg.delay !== undefined ? msg.delay : 0.2}">
           </div>
           <div class="card-footer-col status-col">
             <label class="footer-label">Status Ticks</label>
@@ -2024,7 +1993,8 @@ class WhatsAppStudioApp {
       });
 
       card.querySelector('.msg-delay-input').addEventListener('input', (e) => {
-        msg.delay = parseFloat(e.target.value) || 1.0;
+        const dVal = parseFloat(e.target.value);
+        msg.delay = isNaN(dVal) ? 0.2 : dVal;
         this.updateTimelineBounds();
       });
 
@@ -2295,8 +2265,8 @@ class WhatsAppStudioApp {
       const type = tr.querySelector('.sheet-cell-type').value;
       const text = tr.querySelector('.sheet-cell-text').value;
       const time = tr.querySelector('.sheet-cell-time').value;
-      const status = tr.querySelector('.sheet-cell-status').value;
-      const delay = parseFloat(tr.querySelector('.sheet-cell-delay').value) || 1.0;
+      const delayVal = parseFloat(tr.querySelector('.sheet-cell-delay').value);
+      const delay = isNaN(delayVal) ? 0.2 : delayVal;
 
       const existing = this.messages[idx];
       updated.push({
