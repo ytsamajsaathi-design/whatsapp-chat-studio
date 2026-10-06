@@ -1851,95 +1851,105 @@ class WhatsAppStudioApp {
 
       card.innerHTML = `
         <div class="msg-card-header">
-          <div class="msg-badge-group">
-            <span class="sender-badge ${msg.sender}">${msg.sender === 'sender' ? 'Sender (Me)' : 'Receiver (Them)'}</span>
+          <div class="msg-header-left">
+            <span class="msg-index-chip">#${idx + 1}</span>
+            <span class="sender-badge ${msg.sender}">${msg.sender === 'sender' ? '🟢 Sender (Me)' : '🔵 Receiver (Them)'}</span>
             <span class="type-pill">${msg.type === 'voice' ? '🎙️ Voice Note' : '💬 Text'}</span>
           </div>
           <div class="card-order-actions">
-            <button title="Move Up" class="move-up-btn" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
-            <button title="Move Down" class="move-down-btn" ${idx === this.messages.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
-            <button title="Duplicate" class="dup-btn">📋</button>
-            <button title="Delete" class="del-btn" style="color:#ef4444;">✕</button>
+            <button title="Move Up" class="card-btn-action move-up-btn" ${idx === 0 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▲</button>
+            <button title="Move Down" class="card-btn-action move-down-btn" ${idx === this.messages.length - 1 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▼</button>
+            <button title="Duplicate" class="card-btn-action dup-btn">📋</button>
+            <button title="Delete" class="card-btn-action del-btn del-danger">✕</button>
+          </div>
+        </div>
+
+        <div class="msg-card-subbar">
+          <span class="card-field-title">${msg.type === 'voice' ? '🎙️ Audio Transcript / Prompt (v4)' : '💬 Message Content'}</span>
+          <div class="card-toggles-group">
+            <button type="button" class="card-toggle-pill toggle-sender-btn" title="Switch side between Sender and Receiver">
+              ⇄ Switch Side
+            </button>
+            <button type="button" class="card-toggle-pill toggle-type-btn" title="Convert between Text and Voice note">
+              ${msg.type === 'voice' ? '💬 To Text' : '🎙️ To Voice'}
+            </button>
           </div>
         </div>
 
         <div class="msg-card-body">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label class="input-label">${msg.type === 'voice' ? 'Audio Transcript / Prompt' : 'Message Content'}</label>
-            <div style="display:flex; gap:0.4rem;">
-              <button class="btn btn-outline btn-sm toggle-sender-btn" style="padding:0.15rem 0.4rem; font-size:0.7rem;">
-                ⇄ Switch Side
-              </button>
-              <button class="btn btn-outline btn-sm toggle-type-btn" style="padding:0.15rem 0.4rem; font-size:0.7rem;">
-                ${msg.type === 'voice' ? '💬 To Text' : '🎙️ To Voice'}
-              </button>
-            </div>
-          </div>
-
           <!-- Expressive Audio Tags quick bar right above audio transcript textarea -->
           <div class="card-audio-tags-row">
-            <span class="card-tags-label" title="Insert expressive audio tags for ElevenLabs v4">Tags:</span>
-            <button type="button" class="card-tag-btn" data-tag="[whispering]" title="Insert whispering style">🤫 whisper</button>
-            <button type="button" class="card-tag-btn" data-tag="[shouting]" title="Insert shouting style">📢 shout</button>
-            <button type="button" class="card-tag-btn" data-tag="[laughing]" title="Insert laughing">😂 laugh</button>
-            <button type="button" class="card-tag-btn" data-tag="[sighs]" title="Insert sighs">😮‍💨 sighs</button>
-            <button type="button" class="card-tag-btn" data-tag="[gasping]" title="Insert gasping">😱 gasp</button>
-            <button type="button" class="card-tag-btn" data-tag="[excited]" title="Insert excited tone">🤩 excited</button>
-            <button type="button" class="card-tag-btn" data-tag="[angry]" title="Insert angry tone">😡 angry</button>
-            <button type="button" class="card-tag-btn" data-tag="[crying]" title="Insert crying tone">😢 cry</button>
-            <button type="button" class="card-tag-btn" data-tag="[pause]" title="Insert audio pause">⏸️ pause</button>
+            <span class="card-tags-label" title="Insert expressive audio tags for ElevenLabs v4">🏷️ Tags:</span>
+            <div class="card-tags-scroll">
+              <button type="button" class="card-tag-btn" data-tag="[whispering]" title="Insert whispering style">🤫 whisper</button>
+              <button type="button" class="card-tag-btn" data-tag="[shouting]" title="Insert shouting style">📢 shout</button>
+              <button type="button" class="card-tag-btn" data-tag="[laughing]" title="Insert laughing">😂 laugh</button>
+              <button type="button" class="card-tag-btn" data-tag="[sighs]" title="Insert sighs">😮‍💨 sighs</button>
+              <button type="button" class="card-tag-btn" data-tag="[gasping]" title="Insert gasping">😱 gasp</button>
+              <button type="button" class="card-tag-btn" data-tag="[excited]" title="Insert excited tone">🤩 excited</button>
+              <button type="button" class="card-tag-btn" data-tag="[angry]" title="Insert angry tone">😡 angry</button>
+              <button type="button" class="card-tag-btn" data-tag="[crying]" title="Insert crying tone">😢 cry</button>
+              <button type="button" class="card-tag-btn" data-tag="[pause]" title="Insert audio pause">⏸️ pause</button>
+            </div>
             <button type="button" class="card-tag-btn tag-more" title="More expressive tags">+ More ▾</button>
           </div>
 
-          <textarea class="msg-textarea" placeholder="Type message...">${msg.text}</textarea>
+          <textarea class="msg-textarea" placeholder="${msg.type === 'voice' ? 'Type voice transcript or prompt with [tags]...' : 'Type message text...'}">${msg.text}</textarea>
 
           ${msg.type === 'voice' ? `
             <div class="voice-actions-box">
               <div class="voice-status-row">
-                <span>⏱️ Duration: <strong>${AudioManager.formatDuration(msg.audioDuration)}</strong></span>
-                <span>${msg.audioBlob ? '✅ Audio Ready' : '⚡ Synthetic Wave'}</span>
+                <div class="voice-duration-pill">
+                  <span>⏱️</span>
+                  <span>Duration: <strong>${AudioManager.formatDuration(msg.audioDuration)}</strong></span>
+                </div>
+                <span class="voice-ready-badge ${msg.audioBlob ? 'ready' : 'synthetic'}">
+                  ${msg.audioBlob ? '✅ Audio Ready' : '⚡ Synthetic Wave'}
+                </span>
               </div>
-              <div style="display:flex; align-items:center; gap:0.4rem;">
-                <label class="input-label" style="white-space:nowrap; font-weight:600;">Voice:</label>
-                <select class="card-voice-select form-control-compact" style="flex:1;">
+              <div class="voice-selector-row">
+                <label class="voice-selector-label">Voice:</label>
+                <select class="card-voice-select form-control-compact">
                   <!-- dynamically filled with ElevenLabs voices -->
                 </select>
               </div>
-              <div class="voice-btn-group" style="display:flex; flex-wrap:wrap; gap:0.35rem;">
-                <button class="btn btn-primary btn-sm gen-eleven-btn" style="flex:1; min-width:125px; background:linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border-color:#6366f1;" title="Synthesize using ElevenLabs eleven_v4">
+              <div class="voice-btn-grid">
+                <button class="btn btn-primary btn-sm gen-eleven-btn" title="Synthesize using ElevenLabs eleven_v4">
                   <span>✨</span> ElevenLabs (v4)
                 </button>
-                <button class="btn btn-secondary btn-sm gen-browser-btn" style="flex:1; min-width:85px;" title="Offline synthetic voice">
-                  <span>🗣️</span> Browser
-                </button>
-                <label class="btn btn-outline btn-sm" style="margin:0; cursor:pointer; min-width:65px; display:inline-flex; align-items:center; justify-content:center;">
-                  <span>📁</span> Upload
-                  <input type="file" class="upload-audio-input" accept="audio/*" style="display:none;">
-                </label>
-                <button class="btn btn-outline btn-sm play-audio-preview-btn" style="min-width:65px;">
-                  ▶ Preview
-                </button>
+                <div class="voice-aux-btns">
+                  <button class="btn btn-secondary btn-sm gen-browser-btn" title="Offline synthetic voice">
+                    <span>🗣️</span> Browser
+                  </button>
+                  <label class="btn btn-outline btn-sm upload-audio-btn" title="Upload custom audio file">
+                    <span>📁</span> Upload
+                    <input type="file" class="upload-audio-input" accept="audio/*" style="display:none;">
+                  </label>
+                  <button class="btn btn-outline btn-sm play-audio-preview-btn" title="Preview audio">
+                    ▶ Preview
+                  </button>
+                </div>
               </div>
             </div>
           ` : ''}
         </div>
 
         <div class="msg-card-footer">
-          <div class="form-control-compact">
-            <label class="input-label">Timestamp</label>
-            <input type="text" class="msg-time-input" value="${msg.time}">
+          <div class="card-footer-col">
+            <label class="footer-label">Timestamp</label>
+            <input type="text" class="msg-time-input footer-input" value="${msg.time}" placeholder="10:42 AM">
           </div>
-          <div class="form-control-compact">
-            <label class="input-label">Status Ticks</label>
-            <select class="msg-status-select">
-              <option value="sent" ${msg.status === 'sent' ? 'selected' : ''}>Single Tick (Sent)</option>
-              <option value="delivered" ${msg.status === 'delivered' ? 'selected' : ''}>Double Grey (Delivered)</option>
-              <option value="read" ${msg.status === 'read' ? 'selected' : ''}>Double Blue (Read)</option>
+          <div class="card-footer-col">
+            <label class="footer-label">Delay (s)</label>
+            <input type="number" step="0.1" min="0.2" max="10" class="msg-delay-input footer-input" value="${msg.delay}">
+          </div>
+          <div class="card-footer-col status-col">
+            <label class="footer-label">Status Ticks</label>
+            <select class="msg-status-select footer-select">
+              <option value="sent" ${msg.status === 'sent' ? 'selected' : ''}>✓ Sent (Single)</option>
+              <option value="delivered" ${msg.status === 'delivered' ? 'selected' : ''}>✓✓ Delivered (Grey)</option>
+              <option value="read" ${msg.status === 'read' ? 'selected' : ''}>✓✓ Read (Blue)</option>
             </select>
-          </div>
-          <div class="form-control-compact">
-            <label class="input-label">Typing Delay (s)</label>
-            <input type="number" step="0.1" min="0.2" max="10" class="msg-delay-input" value="${msg.delay}">
           </div>
         </div>
       `;

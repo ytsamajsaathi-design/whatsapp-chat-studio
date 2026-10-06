@@ -56,77 +56,88 @@
     <!-- LEFT PANEL: Conversation Sequence Pipeline -->
     <section class="pipeline-panel" id="pipelinePanel">
       <div class="pipeline-toolbar">
+        <!-- Title & Collapse Row -->
         <div class="toolbar-title-row">
-          <div style="display:flex; align-items:center; gap:0.5rem;">
-            <span class="toolbar-title">Message Sequence Pipeline</span>
-            <span id="msgCountBadge" class="type-pill">5 Messages</span>
+          <div class="toolbar-title-group">
+            <span class="toolbar-title">💬 Timeline &amp; Inputs</span>
+            <span id="msgCountBadge" class="toolbar-count-badge">5 Messages</span>
           </div>
-          <button id="collapseSidebarBtn" class="btn btn-outline btn-sm" title="Collapse Sidebar" type="button" style="padding:0.2rem 0.5rem; font-size:0.75rem;">
-            <span>◀</span>
+          <button id="collapseSidebarBtn" class="toolbar-collapse-btn" title="Collapse Sidebar" type="button">
+            <span>◀</span> Hide
           </button>
         </div>
-        <div class="toolbar-actions-row">
-          <button class="btn btn-secondary btn-sm" id="addSenderTextBtn">
-            <span>+</span> Sender (Green)
+
+        <!-- 3-Button Add Message Grid (Clean, proportional, no wrapping) -->
+        <div class="toolbar-actions-grid">
+          <button class="btn-action-add add-sender" id="addSenderTextBtn" type="button" title="Add outgoing sender message">
+            <span>🟢</span> + Sender
           </button>
-          <button class="btn btn-secondary btn-sm" id="addReceiverTextBtn">
-            <span>+</span> Receiver (White)
+          <button class="btn-action-add add-receiver" id="addReceiverTextBtn" type="button" title="Add incoming receiver message">
+            <span>⚪</span> + Receiver
           </button>
-          <button class="btn btn-primary btn-sm" id="addVoiceNoteBtn">
-            <span>🎙️</span> + Voice Note
+          <button class="btn-action-add add-voice" id="addVoiceNoteBtn" type="button" title="Add voice note audio message">
+            <span>🎙️</span> + Voice
           </button>
+        </div>
+
+        <!-- Character Voiceover Personas Bar -->
+        <div class="voice-personas-bar">
+          <div class="personas-header">
+            <div class="personas-title">
+              <span>🎭</span>
+              <span>Voice Personas</span>
+            </div>
+            <button class="batch-gen-btn" id="batchGenAllVoicesBtn" type="button" title="Synthesize all voice notes in timeline">
+              <span>⚡</span> Gen All Audio
+            </button>
+          </div>
+          <div class="personas-grid">
+            <!-- Sender Persona -->
+            <div class="persona-slot sender-slot">
+              <div class="persona-slot-header">
+                <div class="persona-badge sender">
+                  <span id="personaSenderAvatarChip" class="persona-avatar-chip" title="Sender Profile Photo">M</span>
+                  <span class="persona-role-text">🟢 Sender</span>
+                </div>
+                <button type="button" id="openSenderPhotoBtn" class="persona-photo-btn" title="Set Sender Profile Photo">
+                  <span>📷</span> Photo
+                </button>
+              </div>
+              <select id="personaSenderVoiceSelect" class="persona-voice-dropdown" title="Default Voice Actor for Sender"></select>
+            </div>
+
+            <!-- Receiver Persona -->
+            <div class="persona-slot receiver-slot">
+              <div class="persona-slot-header">
+                <div class="persona-badge receiver">
+                  <span id="personaReceiverAvatarChip" class="persona-avatar-chip receiver" title="Receiver Profile Photo">S</span>
+                  <span class="persona-role-text">🔵 Receiver</span>
+                </div>
+                <button type="button" id="openReceiverPhotoBtn" class="persona-photo-btn" title="Set Receiver Profile Photo">
+                  <span>📷</span> Photo
+                </button>
+              </div>
+              <select id="personaReceiverVoiceSelect" class="persona-voice-dropdown" title="Default Voice Actor for Receiver"></select>
+            </div>
+          </div>
         </div>
 
         <!-- Audio Prompt Tags Quick-Bar for Sidebar -->
         <div class="audio-tags-quick-bar">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.72rem; font-weight:700; color:#c084fc; display:flex; align-items:center; gap:0.3rem;">
-              <span>🏷️</span> ElevenLabs (v4) Audio Tags:
-            </span>
-            <span style="font-size:0.65rem; color:var(--studio-muted);">Click to copy tag</span>
+          <div class="tags-quick-header">
+            <span class="tags-quick-title"><span>🏷️</span> ElevenLabs v4 Audio Tags</span>
+            <span class="tags-quick-hint">Click chip to copy</span>
           </div>
           <div class="audio-tags-chips-container">
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[whispering]" title="Whisper vocal tone">🤫 [whispering]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[shouting]" title="Loud / shouting tone">📢 [shouting]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[laughing]" title="Laughing while speaking">😂 [laughing]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[sighs]" title="Audible sigh">😮‍💨 [sighs]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[gasping]" title="Shocked gasp">😱 [gasping]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[excited]" title="High energy / excitement">🤩 [excited]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[angry]" title="Frustrated / intense anger">😡 [angry]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[crying]" title="Sobbing or weeping">😢 [crying]</button>
-            <button type="button" class="audio-tag-chip global-tag" data-tag="[pause]" title="Dramatic pause">⏸️ [pause]</button>
-          </div>
-        </div>
-
-        <!-- Character Voiceover Personas Bar -->
-        <div class="voice-personas-bar" style="background:#090d16; border:1px solid #334155; border-radius:8px; padding:0.6rem; display:flex; flex-direction:column; gap:0.45rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.75rem; font-weight:700; color:var(--studio-muted); text-transform:uppercase;">🎭 Character Personas</span>
-            <button class="btn btn-primary btn-sm" id="batchGenAllVoicesBtn" style="padding:0.2rem 0.5rem; font-size:0.72rem;">
-              <span>⚡</span> Gen All Audio
-            </button>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-            <div class="form-control-compact">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-                <label class="input-label" style="color:#4ade80; font-size:0.72rem; font-weight:600; display:flex; align-items:center; gap:0.35rem; margin:0;">
-                  <span id="personaSenderAvatarChip" class="persona-avatar-chip" title="Sender Profile Photo">M</span>
-                  🟢 Sender (Person A)
-                </label>
-                <button type="button" id="openSenderPhotoBtn" title="Set Sender Profile Photo" style="background:none; border:none; color:#4ade80; font-size:0.68rem; cursor:pointer; padding:0; text-decoration:underline;">📷 Photo</button>
-              </div>
-              <select id="personaSenderVoiceSelect" class="form-control-compact" style="background:#1e293b; color:#fff; border:1px solid #334155;"></select>
-            </div>
-            <div class="form-control-compact">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-                <label class="input-label" style="color:#38bdf8; font-size:0.72rem; font-weight:600; display:flex; align-items:center; gap:0.35rem; margin:0;">
-                  <span id="personaReceiverAvatarChip" class="persona-avatar-chip receiver" title="Receiver Profile Photo">S</span>
-                  🔵 Receiver (Person B)
-                </label>
-                <button type="button" id="openReceiverPhotoBtn" title="Set Receiver Profile Photo" style="background:none; border:none; color:#38bdf8; font-size:0.68rem; cursor:pointer; padding:0; text-decoration:underline;">📷 Photo</button>
-              </div>
-              <select id="personaReceiverVoiceSelect" class="form-control-compact" style="background:#1e293b; color:#fff; border:1px solid #334155;"></select>
-            </div>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[whispering]" title="Whisper vocal tone">🤫 whisper</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[shouting]" title="Loud / shouting tone">📢 shout</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[laughing]" title="Laughing while speaking">😂 laugh</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[sighs]" title="Audible sigh">😮‍💨 sighs</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[gasping]" title="Shocked gasp">😱 gasp</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[excited]" title="High energy / excitement">🤩 excited</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[angry]" title="Frustrated / intense anger">😡 angry</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[crying]" title="Sobbing or weeping">😢 cry</button>
+            <button type="button" class="audio-tag-chip global-tag" data-tag="[pause]" title="Dramatic pause">⏸️ pause</button>
           </div>
         </div>
       </div>
