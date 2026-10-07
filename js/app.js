@@ -2818,6 +2818,32 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => window.app.openVoiceLibraryModal(), 100);
   }
   const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('theme') === 'dark') {
+    window.app.settings.theme = 'dark';
+    document.body.className = 'theme-dark';
+    const themeIcon = document.getElementById('themeIcon');
+    if (themeIcon) themeIcon.innerText = '☀️';
+  }
+  if (urlParams.has('export_test')) {
+    setTimeout(() => {
+      const testCanvas = document.createElement('canvas');
+      testCanvas.width = 1080;
+      testCanvas.height = 1920;
+      window.app.renderer.canvas = testCanvas;
+      window.app.renderer.ctx = testCanvas.getContext('2d');
+      window.app.renderer.renderFrame(4.0, window.app.messages, window.app.settings, 1080, 1920);
+      testCanvas.id = 'exportTestCanvas';
+      testCanvas.style.position = 'fixed';
+      testCanvas.style.top = '0';
+      testCanvas.style.left = '0';
+      testCanvas.style.zIndex = '999999';
+      testCanvas.style.width = '100vw';
+      testCanvas.style.height = '100vh';
+      testCanvas.style.objectFit = 'contain';
+      testCanvas.style.backgroundColor = '#090d16';
+      document.body.appendChild(testCanvas);
+    }, 150);
+  }
   if (urlParams.has('t')) {
     const seekT = parseFloat(urlParams.get('t'));
     if (!isNaN(seekT)) {

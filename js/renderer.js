@@ -138,8 +138,8 @@ class AnimationRenderer {
     const showPhoneMockup = settings.showPhoneFrame !== false;
 
     if (showPhoneMockup) {
-      // Authentic Phone Mockup Mode: 375:750 (1:2 ratio) matching preview
-      const targetAspect = 375 / 750;
+      // Authentic Phone Mockup Mode: 375:760 matching modern Android preview
+      const targetAspect = 375 / 760;
       let phoneH = height * 0.94;
       let phoneW = phoneH * targetAspect;
       if (phoneW > width * 0.92) {
@@ -181,15 +181,15 @@ class AnimationRenderer {
         }
       }
 
-      // 2. Draw Realistic Phone Chassis
+      // 2. Draw Realistic Android Flagship Phone Chassis
       this.drawPhoneChassis(ctx, phoneX, phoneY, phoneW, phoneH, scale);
 
-      // 3. Inner Screen Area (10px bezel on all sides)
-      const screenX = phoneX + 10 * scale;
-      const screenY = phoneY + 10 * scale;
-      const screenW = phoneW - 20 * scale;
-      const screenH = phoneH - 20 * scale;
-      const screenRadius = 38 * scale;
+      // 3. Inner Screen Area (slim 7px bezel on all sides)
+      const screenX = phoneX + 7 * scale;
+      const screenY = phoneY + 7 * scale;
+      const screenW = phoneW - 14 * scale;
+      const screenH = phoneH - 14 * scale;
+      const screenRadius = 26 * scale;
 
       ctx.save();
       ctx.beginPath();
@@ -201,9 +201,9 @@ class AnimationRenderer {
       ctx.fillRect(screenX, screenY, screenW, screenH);
       this.drawWhatsAppPattern(ctx, screenW, screenH, isDark, screenX, screenY, scale);
 
-      // 4. Status Bar with Dynamic Island
-      const statusBarHeight = 38 * scale;
-      this.drawStatusBar(ctx, screenX, screenY, screenW, statusBarHeight, scale, isDark, true);
+      // 4. Status Bar with Centered Punch-Hole Camera
+      const statusBarHeight = 34 * scale;
+      this.drawStatusBar(ctx, screenX, screenY, screenW, statusBarHeight, scale, isDark, true, settings);
 
       // 5. WhatsApp Header Bar
       const headerHeight = 56 * scale;
@@ -211,14 +211,16 @@ class AnimationRenderer {
       const headerState = this.getHeaderStateAt(t, messages);
       this.drawHeader(ctx, screenX, headerY, screenW, headerHeight, scale, isDark, settings, headerState);
 
-      // 6. WhatsApp Bottom Bar
-      const inputBarHeight = 52 * scale;
-      const inputY = screenY + screenH - inputBarHeight;
+      // 6. Navigation Bar & Floating Bottom Bar
+      const navBarHeight = 14 * scale;
+      const inputBarHeight = 56 * scale;
+      const inputY = screenY + screenH - navBarHeight - inputBarHeight;
       this.drawInputBar(ctx, screenX, inputY, screenW, inputBarHeight, scale, isDark);
+      this.drawAndroidNavBar(ctx, screenX, screenY + screenH - navBarHeight, screenW, navBarHeight, scale, isDark);
 
       // 7. Chat Messages Viewport (between Header and Bottom Bar)
       const chatY = headerY + headerHeight;
-      const chatH = screenH - statusBarHeight - headerHeight - inputBarHeight;
+      const chatH = screenH - statusBarHeight - headerHeight - inputBarHeight - navBarHeight;
 
       ctx.save();
       ctx.beginPath();
@@ -269,7 +271,7 @@ class AnimationRenderer {
       ctx.save();
       if (viewX > 0 || viewY > 0) {
         ctx.beginPath();
-        this.roundRect(ctx, viewX, viewY, viewW, viewH, 14 * scale);
+        this.roundRect(ctx, viewX, viewY, viewW, viewH, 16 * scale);
         ctx.clip();
       }
 
@@ -278,9 +280,9 @@ class AnimationRenderer {
       ctx.fillRect(viewX, viewY, viewW, viewH);
       this.drawWhatsAppPattern(ctx, viewW, viewH, isDark, viewX, viewY, scale);
 
-      // 1. Mobile Top Status Bar with Clock & Dynamic Island
-      const statusBarHeight = 38 * scale;
-      this.drawStatusBar(ctx, viewX, viewY, viewW, statusBarHeight, scale, isDark, true);
+      // 1. Mobile Top Status Bar with Centered Punch-Hole Camera
+      const statusBarHeight = 34 * scale;
+      this.drawStatusBar(ctx, viewX, viewY, viewW, statusBarHeight, scale, isDark, true, settings);
 
       // 2. WhatsApp Header Bar
       const headerHeight = 56 * scale;
@@ -288,14 +290,16 @@ class AnimationRenderer {
       const headerState = this.getHeaderStateAt(t, messages);
       this.drawHeader(ctx, viewX, headerY, viewW, headerHeight, scale, isDark, settings, headerState);
 
-      // 3. WhatsApp Bottom Input Bar
-      const inputBarHeight = 52 * scale;
-      const inputY = viewY + viewH - inputBarHeight;
+      // 3. Navigation Bar & Floating Bottom Bar
+      const navBarHeight = 14 * scale;
+      const inputBarHeight = 56 * scale;
+      const inputY = viewY + viewH - navBarHeight - inputBarHeight;
       this.drawInputBar(ctx, viewX, inputY, viewW, inputBarHeight, scale, isDark);
+      this.drawAndroidNavBar(ctx, viewX, viewY + viewH - navBarHeight, viewW, navBarHeight, scale, isDark);
 
       // 4. Chat Messages Viewport (between Header and Bottom Bar)
       const chatY = headerY + headerHeight;
-      const chatH = viewH - statusBarHeight - headerHeight - inputBarHeight;
+      const chatH = viewH - statusBarHeight - headerHeight - inputBarHeight - navBarHeight;
 
       ctx.save();
       ctx.beginPath();
@@ -338,51 +342,52 @@ class AnimationRenderer {
   drawPhoneChassis(ctx, x, y, w, h, scale) {
     ctx.save();
     // Drop shadow
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-    ctx.shadowBlur = 32 * scale;
-    ctx.shadowOffsetY = 18 * scale;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+    ctx.shadowBlur = 35 * scale;
+    ctx.shadowOffsetY = 20 * scale;
 
-    // Outer Chassis Body (iPhone titanium black)
+    const chassisRadius = 32 * scale;
+
+    // Outer Chassis Body (Modern Android Flagship: Titanium Graphite / Dark Slate)
     ctx.beginPath();
-    this.roundRect(ctx, x, y, w, h, 46 * scale);
-    ctx.fillStyle = '#121212';
+    this.roundRect(ctx, x, y, w, h, chassisRadius);
+    ctx.fillStyle = '#121417';
     ctx.fill();
 
     // Reset shadow
     ctx.restore();
 
     ctx.save();
-    // Outer Chassis Rim (#2d3748)
-    ctx.strokeStyle = '#2d3748';
-    ctx.lineWidth = 2.4 * scale;
+    // Metallic Titanium Edge Rim (#2a313d)
+    ctx.strokeStyle = '#2a313d';
+    ctx.lineWidth = 1.8 * scale;
     ctx.beginPath();
-    this.roundRect(ctx, x, y, w, h, 46 * scale);
+    this.roundRect(ctx, x, y, w, h, chassisRadius);
     ctx.stroke();
 
-    // Inner subtle bezel rim
-    ctx.strokeStyle = '#1e293b';
+    // Inner subtle chamfer bezel rim
+    ctx.strokeStyle = '#181d24';
     ctx.lineWidth = 1 * scale;
     ctx.beginPath();
-    this.roundRect(ctx, x + 1.5 * scale, y + 1.5 * scale, w - 3 * scale, h - 3 * scale, 44.5 * scale);
+    this.roundRect(ctx, x + 1.2 * scale, y + 1.2 * scale, w - 2.4 * scale, h - 2.4 * scale, chassisRadius - 1.2 * scale);
     ctx.stroke();
 
-    // Hardware Side Buttons
-    ctx.fillStyle = '#2d3748';
-    // Left: Action / Mute button
+    // Subtle Antenna Bands (Top & Bottom left/right)
+    ctx.fillStyle = '#3a4454';
+    ctx.fillRect(x + 36 * scale, y - 0.5 * scale, 2 * scale, 2.5 * scale);
+    ctx.fillRect(x + w - 38 * scale, y - 0.5 * scale, 2 * scale, 2.5 * scale);
+    ctx.fillRect(x + 36 * scale, y + h - 2 * scale, 2 * scale, 2.5 * scale);
+    ctx.fillRect(x + w - 38 * scale, y + h - 2 * scale, 2 * scale, 2.5 * scale);
+
+    // Modern Android Hardware Side Buttons (Right Side Only)
+    ctx.fillStyle = '#2a313d';
+    // Right: Volume Rocker (Volume Up & Down)
     ctx.beginPath();
-    this.roundRect(ctx, x - 3.2 * scale, y + 110 * scale, 3.2 * scale, 24 * scale, 1.6 * scale);
+    this.roundRect(ctx, x + w, y + 130 * scale, 3 * scale, 65 * scale, 1.5 * scale);
     ctx.fill();
-    // Left: Volume Up button
+    // Right: Power / Sleep Key
     ctx.beginPath();
-    this.roundRect(ctx, x - 3.2 * scale, y + 150 * scale, 3.2 * scale, 44 * scale, 1.6 * scale);
-    ctx.fill();
-    // Left: Volume Down button
-    ctx.beginPath();
-    this.roundRect(ctx, x - 3.2 * scale, y + 208 * scale, 3.2 * scale, 44 * scale, 1.6 * scale);
-    ctx.fill();
-    // Right: Power / Lock button
-    ctx.beginPath();
-    this.roundRect(ctx, x + w, y + 165 * scale, 3.2 * scale, 68 * scale, 1.6 * scale);
+    this.roundRect(ctx, x + w, y + 215 * scale, 3 * scale, 42 * scale, 1.5 * scale);
     ctx.fill();
 
     ctx.restore();
@@ -403,87 +408,117 @@ class AnimationRenderer {
     ctx.restore();
   }
 
-  drawStatusBar(ctx, x, y, w, h, scale, isDark, showDynamicIsland = true) {
+  drawStatusBar(ctx, x, y, w, h, scale, isDark, showPunchHole = true, settings = null) {
     ctx.save();
-    const fgColor = isDark ? '#ffffff' : '#111b21';
+    const fgColor = isDark ? '#e9edef' : '#111b21';
     ctx.fillStyle = fgColor;
     const cy = y + h / 2;
 
-    // 1. Clock on Left: 9:41
-    ctx.font = `600 ${13.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    // 1. Android Clock on Left (e.g. "9:41" or custom setting)
+    const clockText = (settings && settings.phoneTime) ? settings.phoneTime.replace(/ AM| PM/i, '') : '9:41';
+    ctx.font = `600 ${12.5 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText('9:41', x + 20 * scale, cy);
+    ctx.fillText(clockText, x + 16 * scale, cy + 0.5 * scale);
 
-    // 2. Dynamic Island in Center
-    if (showDynamicIsland) {
-      const islandW = 100 * scale;
-      const islandH = 24 * scale;
-      const islandX = x + (w - islandW) / 2;
-      const islandY = y + 7 * scale;
+    // 2. Centered Punch-Hole Camera
+    if (showPunchHole) {
+      const camX = x + w / 2;
+      const camY = y + 13 * scale;
+      const camR = 5.5 * scale;
 
       ctx.save();
-      ctx.fillStyle = '#000000';
+      // Outer subtle bezel ring
       ctx.beginPath();
-      this.roundRect(ctx, islandX, islandY, islandW, islandH, 12 * scale);
+      ctx.arc(camX, camY, camR + 0.8 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)';
       ctx.fill();
 
-      // Front Camera Lens Dot (Left)
-      ctx.fillStyle = '#111827';
+      // Deep Black Camera Lens Hole
       ctx.beginPath();
-      ctx.arc(islandX + 22 * scale, islandY + islandH / 2, 4.5 * scale, 0, Math.PI * 2);
+      ctx.arc(camX, camY, camR, 0, Math.PI * 2);
+      ctx.fillStyle = '#06090e';
       ctx.fill();
 
-      // Lens Reflection Highlight
-      ctx.fillStyle = '#374151';
+      // Optical Anti-Reflective Coating Ring
       ctx.beginPath();
-      ctx.arc(islandX + 21 * scale, islandY + islandH / 2 - 1.2 * scale, 1.2 * scale, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.arc(camX, camY, camR * 0.65, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.45)';
+      ctx.lineWidth = 0.8 * scale;
+      ctx.stroke();
 
-      // Speaker / Sensor Slit (Right)
-      ctx.fillStyle = '#1e293b';
+      // Specular Reflection Highlight Dot
       ctx.beginPath();
-      this.roundRect(ctx, islandX + islandW - 32 * scale, islandY + (islandH - 3.5 * scale) / 2, 14 * scale, 3.5 * scale, 1.75 * scale);
+      ctx.arc(camX - 1.4 * scale, camY - 1.4 * scale, 1.2 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
       ctx.fill();
       ctx.restore();
     }
 
-    // 3. Right Status Icons: 5G, Signal Bars, Battery
-    const rx = x + w - 18 * scale;
+    // 3. Right Status Icons: 5G, Wi-Fi fan, Signal bars, Battery
+    const rx = x + w - 16 * scale;
 
-    // Battery
-    const batW = 22 * scale;
-    const batH = 11.5 * scale;
+    // Battery (Modern Android horizontal capsule with level + percentage)
+    const batW = 17 * scale;
+    const batH = 9.5 * scale;
     const batX = rx - batW;
     const batY = cy - batH / 2;
+
     ctx.strokeStyle = fgColor;
-    ctx.lineWidth = 1.3 * scale;
+    ctx.lineWidth = 1.2 * scale;
     ctx.beginPath();
-    this.roundRect(ctx, batX, batY, batW, batH, 3 * scale);
+    this.roundRect(ctx, batX, batY, batW, batH, 2 * scale);
     ctx.stroke();
 
     // Battery terminal cap
-    ctx.fillRect(batX + batW, cy - 2.5 * scale, 1.8 * scale, 5 * scale);
+    ctx.fillStyle = fgColor;
+    ctx.fillRect(batX + batW + 0.5 * scale, cy - 2 * scale, 1.4 * scale, 4 * scale);
 
-    // Battery fill (green 98%)
+    // Battery fill (green 88%)
     ctx.fillStyle = '#22c55e';
     ctx.beginPath();
-    this.roundRect(ctx, batX + 2 * scale, batY + 2 * scale, 16 * scale, batH - 4 * scale, 1.5 * scale);
+    this.roundRect(ctx, batX + 1.5 * scale, batY + 1.5 * scale, 12 * scale, batH - 3 * scale, 1 * scale);
     ctx.fill();
 
-    // Signal Bars (4 ascending bars)
-    const sigX = batX - 22 * scale;
+    // Battery percentage text (98%)
     ctx.fillStyle = fgColor;
-    for (let i = 0; i < 4; i++) {
-      const bH = (3 + i * 2.4) * scale;
-      ctx.fillRect(sigX + i * (2.8 * scale), cy + 4 * scale - bH, 2 * scale, bH);
-    }
-
-    // "5G" Text Badge
-    ctx.font = `700 ${10.5 * scale}px -apple-system, BlinkMacSystemFont, sans-serif`;
+    ctx.font = `600 ${9.5 * scale}px Roboto, -apple-system, sans-serif`;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillText('5G', sigX - 4 * scale, cy + 0.5 * scale);
+    ctx.fillText('98%', batX - 4 * scale, cy + 0.5 * scale);
+
+    // Android Cellular Signal (Solid Stair Triangle / 4 Bars)
+    const sigX = batX - 40 * scale;
+    ctx.fillStyle = fgColor;
+    for (let i = 0; i < 4; i++) {
+      const bH = (2.5 + i * 2.2) * scale;
+      ctx.fillRect(sigX + i * (2.6 * scale), cy + 4.5 * scale - bH, 1.8 * scale, bH);
+    }
+
+    // Android Wi-Fi Icon (3 radiating curved fan arcs)
+    const wifiX = sigX - 16 * scale;
+    ctx.strokeStyle = fgColor;
+    ctx.lineWidth = 1.3 * scale;
+    ctx.lineCap = 'round';
+    // Outer arc
+    ctx.beginPath();
+    ctx.arc(wifiX, cy + 4 * scale, 8 * scale, Math.PI * 1.25, Math.PI * 1.75);
+    ctx.stroke();
+    // Middle arc
+    ctx.beginPath();
+    ctx.arc(wifiX, cy + 4 * scale, 5 * scale, Math.PI * 1.25, Math.PI * 1.75);
+    ctx.stroke();
+    // Center dot
+    ctx.fillStyle = fgColor;
+    ctx.beginPath();
+    ctx.arc(wifiX, cy + 3.2 * scale, 1.2 * scale, 0, Math.PI * 2);
+    ctx.fill();
+
+    // "5G" Text Badge
+    ctx.font = `700 ${9.5 * scale}px Roboto, -apple-system, sans-serif`;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('5G', wifiX - 9 * scale, cy + 0.5 * scale);
 
     ctx.restore();
   }
@@ -506,46 +541,41 @@ class AnimationRenderer {
 
   drawHeaderIcons(ctx, x, y, h, scale, isDark) {
     const iconColor = isDark ? '#aebac1' : '#54656f';
-    ctx.save();
-    ctx.strokeStyle = iconColor;
-    ctx.fillStyle = iconColor;
     const cy = y + h / 2;
 
-    // 1. Video Camera (at rx - 54 * scale)
-    const vidX = x - 54 * scale;
-    const vidW = 13 * scale;
-    const vidH = 10 * scale;
-    ctx.lineWidth = 1.6 * scale;
-    ctx.beginPath();
-    this.roundRect(ctx, vidX - vidW / 2, cy - vidH / 2, vidW, vidH, 2 * scale);
-    ctx.stroke();
-    // Video camera triangle lens
-    ctx.beginPath();
-    ctx.moveTo(vidX + vidW / 2, cy - 2.5 * scale);
-    ctx.lineTo(vidX + vidW / 2 + 4.5 * scale, cy - 4.5 * scale);
-    ctx.lineTo(vidX + vidW / 2 + 4.5 * scale, cy + 4.5 * scale);
-    ctx.lineTo(vidX + vidW / 2, cy + 2.5 * scale);
-    ctx.closePath();
-    ctx.fill();
+    const drawSvgPath = (svgStr, px, py, size) => {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.scale((size * scale) / 24, (size * scale) / 24);
+      ctx.fillStyle = iconColor;
+      const path = new Path2D(svgStr);
+      ctx.fill(path);
+      ctx.restore();
+    };
 
-    // 2. Phone Call Handset (at rx - 26 * scale)
-    const phoneX = x - 26 * scale;
-    ctx.lineWidth = 1.8 * scale;
-    ctx.beginPath();
-    ctx.arc(phoneX, cy + 2 * scale, 6.5 * scale, Math.PI * 1.15, Math.PI * 1.85);
-    ctx.stroke();
-    ctx.fillRect(phoneX - 6.5 * scale, cy - 4 * scale, 3 * scale, 5 * scale);
-    ctx.fillRect(phoneX + 3.5 * scale, cy - 4 * scale, 3 * scale, 5 * scale);
+    // 1. Video Camera (at rx - 64 * scale)
+    drawSvgPath(
+      'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z',
+      x - 64 * scale,
+      cy - 9.5 * scale,
+      19
+    );
+
+    // 2. Phone Call Handset (at rx - 34 * scale)
+    drawSvgPath(
+      'M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.053 15.053 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1.01A11.36 11.36 0 0 1 8.57 3.99c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.61c0-.55-.45-1-.99-1z',
+      x - 34 * scale,
+      cy - 9 * scale,
+      18
+    );
 
     // 3. Three Vertical Dots (at rx)
-    const dotR = 1.6 * scale;
-    ctx.beginPath();
-    ctx.arc(x, cy - 6 * scale, dotR, 0, Math.PI * 2);
-    ctx.arc(x, cy, dotR, 0, Math.PI * 2);
-    ctx.arc(x, cy + 6 * scale, dotR, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
+    drawSvgPath(
+      'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z',
+      x - 8 * scale,
+      cy - 10 * scale,
+      20
+    );
   }
 
   drawHeader(ctx, x, y, w, h, scale, isDark, settings, statusSubtitle) {
@@ -555,20 +585,30 @@ class AnimationRenderer {
     ctx.fillRect(x, y, w, h);
 
     // Bottom divider shadow
-    ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)';
+    ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(11, 20, 26, 0.08)';
     ctx.fillRect(x, y + h - 1 * scale, w, 1 * scale);
 
-    // Back arrow with "‹ 12"
-    ctx.fillStyle = isDark ? '#00a884' : '#008069';
-    ctx.font = `600 ${15 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('‹ 12', x + 12 * scale, y + h / 2);
+    const cy = y + h / 2;
+
+    // Android Material Back Arrow (←)
+    const arrowColor = isDark ? '#aebac1' : '#54656f';
+    ctx.strokeStyle = arrowColor;
+    ctx.fillStyle = arrowColor;
+    ctx.lineWidth = 2 * scale;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x + 24 * scale, cy);
+    ctx.lineTo(x + 10 * scale, cy);
+    ctx.moveTo(x + 16 * scale, cy - 5.5 * scale);
+    ctx.lineTo(x + 10 * scale, cy);
+    ctx.lineTo(x + 16 * scale, cy + 5.5 * scale);
+    ctx.stroke();
 
     // Contact Avatar Circle
-    const avatarR = 18 * scale;
-    const avatarX = x + 58 * scale;
-    const avatarY = y + h / 2;
+    const avatarR = 19 * scale;
+    const avatarX = x + 48 * scale;
+    const avatarY = cy;
 
     const contactImgSrc = settings.contactAvatar || settings.receiverAvatar;
     const contactImg = contactImgSrc ? this.getImage(contactImgSrc) : null;
@@ -588,7 +628,7 @@ class AnimationRenderer {
       ctx.fill();
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = `600 ${14 * scale}px sans-serif`;
+      ctx.font = `600 ${14.5 * scale}px Roboto, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const initial = (settings.contactName || 'Sarah').charAt(0).toUpperCase();
@@ -597,23 +637,22 @@ class AnimationRenderer {
 
     // Contact Name
     ctx.fillStyle = isDark ? '#e9edef' : '#111b21';
-    ctx.font = `600 ${15.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.font = `600 ${15 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText(settings.contactName || 'Sarah Jenkins', x + 84 * scale, y + 24 * scale);
+    ctx.fillText(settings.contactName || 'Sarah Jenkins', x + 74 * scale, y + 23 * scale);
 
     // Subtitle (online / typing...)
     const isTypingState = statusSubtitle.includes('typing') || statusSubtitle.includes('recording');
-    ctx.font = `${isTypingState ? '600' : '400'} ${11.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.font = `${isTypingState ? '600' : '400'} ${11.5 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.fillStyle = isTypingState
       ? (isDark ? '#00a884' : '#008069')
       : (isDark ? '#8696a0' : '#667781');
-    ctx.fillText(statusSubtitle, x + 84 * scale, y + 42 * scale);
+    ctx.fillText(statusSubtitle, x + 74 * scale, y + 41 * scale);
 
     // Right Action Icons (Video, Phone, Menu dots)
-    this.drawHeaderIcons(ctx, x + w - 16 * scale, y, h, scale, isDark);
+    this.drawHeaderIcons(ctx, x + w - 14 * scale, y, h, scale, isDark);
 
-    ctx.restore();
   }
 
   drawChatTopBadges(ctx, x, y, w, scale, isDark) {
@@ -1100,89 +1139,129 @@ class AnimationRenderer {
 
   drawInputBar(ctx, x, y, w, h, scale, isDark) {
     ctx.save();
-    // Background matching header
-    ctx.fillStyle = isDark ? '#202c33' : '#f0f2f5';
-    ctx.fillRect(x, y, w, h);
-
-    // Top subtle divider
-    ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)';
-    ctx.fillRect(x, y, w, 1 * scale);
-
     const cy = y + h / 2;
 
-    // 1. Left Attachment Plus Button ➕
-    const plusX = x + 18 * scale;
-    ctx.strokeStyle = isDark ? '#00a884' : '#008069';
-    ctx.lineWidth = 2.2 * scale;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(plusX - 6 * scale, cy);
-    ctx.lineTo(plusX + 6 * scale, cy);
-    ctx.moveTo(plusX, cy - 6 * scale);
-    ctx.lineTo(plusX, cy + 6 * scale);
-    ctx.stroke();
-
-    // 2. Input Pill
-    const pillX = x + 38 * scale;
-    const pillW = w - 38 * scale - 76 * scale;
-    const pillH = 34 * scale;
+    // 1. Modern Floating Input Pill on Left
+    const pillX = x + 6 * scale;
+    const pillW = w - 62 * scale;
+    const pillH = 44 * scale;
     const pillY = y + (h - pillH) / 2;
 
-    ctx.fillStyle = isDark ? '#2a3942' : '#ffffff';
+    // Soft drop shadow under pill
+    ctx.save();
+    ctx.shadowColor = isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(11, 20, 26, 0.12)';
+    ctx.shadowBlur = 4 * scale;
+    ctx.shadowOffsetY = 1.5 * scale;
+    ctx.fillStyle = isDark ? '#1f2c34' : '#ffffff';
     ctx.beginPath();
-    this.roundRect(ctx, pillX, pillY, pillW, pillH, 17 * scale);
+    this.roundRect(ctx, pillX, pillY, pillW, pillH, 22 * scale);
     ctx.fill();
+    ctx.restore();
 
-    // Placeholder Text "Message"
+    // Inside Pill:
+    // A. Emoji Smiley Face on the left
+    const emojiX = pillX + 18 * scale;
+    const emojiY = pillY + pillH / 2;
+    const emojiR = 8.5 * scale;
+    ctx.strokeStyle = '#8696a0';
+    ctx.lineWidth = 1.5 * scale;
+    ctx.beginPath();
+    ctx.arc(emojiX, emojiY, emojiR, 0, Math.PI * 2);
+    ctx.stroke();
+    // Eyes
     ctx.fillStyle = '#8696a0';
-    ctx.font = `400 ${13.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.beginPath();
+    ctx.arc(emojiX - 3 * scale, emojiY - 2.5 * scale, 1.2 * scale, 0, Math.PI * 2);
+    ctx.arc(emojiX + 3 * scale, emojiY - 2.5 * scale, 1.2 * scale, 0, Math.PI * 2);
+    ctx.fill();
+    // Smile
+    ctx.beginPath();
+    ctx.arc(emojiX, emojiY + 0.5 * scale, 4.5 * scale, Math.PI * 0.15, Math.PI * 0.85);
+    ctx.stroke();
+
+    // B. Placeholder Text "Message"
+    ctx.fillStyle = '#8696a0';
+    ctx.font = `400 ${14 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Message', pillX + 16 * scale, pillY + pillH / 2);
+    ctx.fillText('Message', emojiX + 16 * scale, emojiY);
 
-    // 3. Camera Icon 📷
-    const camX = x + w - 58 * scale;
-    const camColor = isDark ? '#aebac1' : '#54656f';
-    ctx.strokeStyle = camColor;
-    ctx.fillStyle = camColor;
-    ctx.lineWidth = 1.6 * scale;
+    // C. Attachment Paperclip Icon
+    const clipX = pillX + pillW - 46 * scale;
+    const clipY = emojiY;
+    ctx.strokeStyle = '#8696a0';
+    ctx.lineWidth = 1.5 * scale;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(clipX - 2.5 * scale, clipY + 4.5 * scale);
+    ctx.lineTo(clipX + 3 * scale, clipY - 3 * scale);
+    ctx.arc(clipX + 5 * scale, clipY - 5 * scale, 2.5 * scale, Math.PI * 0.75, Math.PI * 1.75, true);
+    ctx.stroke();
+
+    // D. Camera Icon
+    const camX = pillX + pillW - 20 * scale;
+    const camY = emojiY;
+    ctx.strokeStyle = '#8696a0';
+    ctx.fillStyle = '#8696a0';
+    ctx.lineWidth = 1.5 * scale;
     // Camera body
     ctx.beginPath();
-    this.roundRect(ctx, camX - 8 * scale, cy - 6 * scale, 16 * scale, 12 * scale, 2.5 * scale);
+    this.roundRect(ctx, camX - 7 * scale, camY - 5.5 * scale, 14 * scale, 11 * scale, 2 * scale);
     ctx.stroke();
     // Lens circle
     ctx.beginPath();
-    ctx.arc(camX, cy, 3 * scale, 0, Math.PI * 2);
+    ctx.arc(camX, camY + 0.5 * scale, 2.8 * scale, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 4. Circular Green Mic Button
-    const micX = x + w - 22 * scale;
-    const micR = 17 * scale;
-    ctx.fillStyle = isDark ? '#00a884' : '#008069';
+    // 2. Floating Circular Green Mic Button on the Right
+    const micX = x + w - 26 * scale;
+    const micY = cy;
+    const micR = 22 * scale;
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(11, 20, 26, 0.25)';
+    ctx.shadowBlur = 6 * scale;
+    ctx.shadowOffsetY = 2 * scale;
+    ctx.fillStyle = isDark ? '#00a884' : '#00a884';
     ctx.beginPath();
-    ctx.arc(micX, cy, micR, 0, Math.PI * 2);
+    ctx.arc(micX, micY, micR, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
 
     // White microphone icon inside button
     ctx.fillStyle = '#ffffff';
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.4 * scale;
+    ctx.lineWidth = 1.5 * scale;
     // Capsule
     ctx.beginPath();
-    this.roundRect(ctx, micX - 2.2 * scale, cy - 6 * scale, 4.4 * scale, 8 * scale, 2.2 * scale);
+    this.roundRect(ctx, micX - 2.5 * scale, micY - 6.5 * scale, 5 * scale, 9 * scale, 2.5 * scale);
     ctx.fill();
     // Cradle
     ctx.beginPath();
-    ctx.arc(micX, cy - 1.5 * scale, 4.2 * scale, 0, Math.PI);
+    ctx.arc(micX, micY - 1 * scale, 4.8 * scale, 0, Math.PI);
     ctx.stroke();
     // Stem & base
     ctx.beginPath();
-    ctx.moveTo(micX, cy + 2.7 * scale);
-    ctx.lineTo(micX, cy + 5.5 * scale);
-    ctx.moveTo(micX - 2.8 * scale, cy + 5.5 * scale);
-    ctx.lineTo(micX + 2.8 * scale, cy + 5.5 * scale);
+    ctx.moveTo(micX, cy + 3.8 * scale);
+    ctx.lineTo(micX, cy + 6.8 * scale);
+    ctx.moveTo(micX - 3.2 * scale, cy + 6.8 * scale);
+    ctx.lineTo(micX + 3.2 * scale, cy + 6.8 * scale);
     ctx.stroke();
 
+    ctx.restore();
+  }
+
+  drawAndroidNavBar(ctx, x, y, w, h, scale, isDark) {
+    ctx.save();
+    const navW = 100 * scale;
+    const navH = 3.5 * scale;
+    const navX = x + (w - navW) / 2;
+    const navY = y + (h - navH) / 2;
+
+    ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(17, 27, 33, 0.35)';
+    ctx.beginPath();
+    this.roundRect(ctx, navX, navY, navW, navH, 2 * scale);
+    ctx.fill();
     ctx.restore();
   }
 

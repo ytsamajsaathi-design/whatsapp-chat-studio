@@ -1107,20 +1107,21 @@ body {
   min-height: 0;
 }
 
-/* Realistic Phone Chassis */
+/* Realistic Modern Android Flagship Phone Chassis (Galaxy S24 / Pixel 9 Pro aesthetic) */
 .phone-mockup {
-  height: min(680px, calc(100vh - 180px));
-  max-height: 94%;
+  height: min(690px, calc(100vh - 170px));
+  max-height: 95%;
   width: auto;
-  aspect-ratio: 375 / 750;
+  aspect-ratio: 375 / 760;
   max-width: 95%;
-  background-color: #121212;
-  border-radius: 44px;
-  padding: 10px;
+  background-color: #121417;
+  border-radius: 32px;
+  padding: 7px;
   box-shadow:
-    0 0 0 2px #2d3748,
-    0 25px 60px -15px rgba(0, 0, 0, 0.7),
-    0 0 40px rgba(34, 197, 94, 0.1);
+    0 0 0 1.5px #2a313d,
+    0 0 0 3px #181d24,
+    0 25px 65px -15px rgba(0, 0, 0, 0.75),
+    0 0 45px rgba(0, 168, 132, 0.12);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1129,8 +1130,30 @@ body {
   flex-shrink: 0;
 }
 
+/* Modern Android Hardware Buttons (Right Side Volume Rocker + Power) */
+.phone-mockup::before {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 130px;
+  width: 3px;
+  height: 65px;
+  background: #2a313d;
+  border-radius: 0 2px 2px 0;
+}
+.phone-mockup::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 215px;
+  width: 3px;
+  height: 42px;
+  background: #2a313d;
+  border-radius: 0 2px 2px 0;
+}
+
 .phone-mockup.frameless-mode {
-  border-radius: 20px;
+  border-radius: 18px;
   padding: 4px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   height: min(670px, calc(100vh - 180px));
@@ -1139,10 +1162,14 @@ body {
   aspect-ratio: 375 / 750;
   max-width: 95%;
 }
+.phone-mockup.frameless-mode::before,
+.phone-mockup.frameless-mode::after {
+  display: none;
+}
 
 .phone-screen {
   flex: 1;
-  border-radius: 38px;
+  border-radius: 26px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1153,10 +1180,6 @@ body {
 
 .phone-mockup.frameless-mode .phone-screen {
   border-radius: 16px;
-}
-
-.phone-mockup.frameless-mode .dynamic-island {
-  display: block;
 }
 
 /* WhatsApp Pattern SVG Wallpaper */
@@ -1179,73 +1202,165 @@ body.theme-dark .wa-wallpaper-layer {
   background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
 }
 
-/* Status Bar */
+/* Modern Android Status Bar */
 .wa-status-bar {
-  height: 38px;
-  padding: 0 1.25rem;
+  height: 34px;
+  padding: 0 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.78rem;
-  font-weight: 600;
-  z-index: 10;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", sans-serif;
+  z-index: 15;
   color: #111b21;
+  position: relative;
+  flex-shrink: 0;
 }
 body.theme-dark .wa-status-bar {
-  color: #ffffff;
+  color: #e9edef;
 }
 
-/* Dynamic Island */
-.dynamic-island {
+.android-status-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.android-clock {
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+/* Centered Punch-Hole Camera */
+.punch-hole-camera {
   position: absolute;
-  top: 8px;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 100px;
-  height: 24px;
-  background-color: #000000;
-  border-radius: 14px;
+  width: 12px;
+  height: 12px;
+  background-color: #06090e;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 2px rgba(45, 85, 255, 0.5);
   z-index: 20;
 }
+.punch-hole-camera::after {
+  content: "";
+  position: absolute;
+  top: 2.5px;
+  left: 2.5px;
+  width: 3.5px;
+  height: 3.5px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
 
-/* WhatsApp Header */
+.android-status-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.android-net-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-right: 1px;
+}
+.android-status-svg {
+  display: block;
+  opacity: 0.9;
+}
+.android-battery-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.android-battery-pct {
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.android-battery-icon {
+  width: 17px;
+  height: 9.5px;
+  border: 1.3px solid currentColor;
+  border-radius: 2px;
+  position: relative;
+  padding: 1px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+.android-battery-icon::after {
+  content: "";
+  position: absolute;
+  right: -2.5px;
+  top: 2px;
+  width: 1.5px;
+  height: 3.5px;
+  background: currentColor;
+  border-radius: 0 1px 1px 0;
+}
+.android-battery-level {
+  height: 100%;
+  width: 88%;
+  background-color: #22c55e;
+  border-radius: 0.5px;
+}
+
+/* WhatsApp Header (Modern Android Material 3) */
 .wa-header {
   height: 56px;
   background-color: var(--wa-light-header);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.75rem;
+  padding: 0 0.5rem 0 0.35rem;
   z-index: 10;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(11, 20, 26, 0.08);
+  flex-shrink: 0;
 }
 
 body.theme-dark .wa-header {
   background-color: var(--wa-dark-header);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .wa-header-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   cursor: pointer;
+  min-width: 0;
 }
 
 .wa-back-btn {
+  background: transparent;
+  border: none;
+  color: #54656f;
+  padding: 6px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  color: var(--wa-green-dark);
-  font-weight: 500;
-  font-size: 0.95rem;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+}
+.wa-back-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 body.theme-dark .wa-back-btn {
-  color: var(--wa-green-primary);
+  color: #aebac1;
+}
+body.theme-dark .wa-back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .wa-contact-avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background-color: #00a884;
   color: #ffffff;
@@ -1253,14 +1368,14 @@ body.theme-dark .wa-back-btn {
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   flex-shrink: 0;
 }
 .wa-contact-avatar:hover {
-  transform: scale(1.06);
+  transform: scale(1.05);
   box-shadow: 0 0 0 2px var(--wa-green-primary);
 }
 .wa-contact-avatar img {
@@ -1305,13 +1420,31 @@ body.theme-dark .wa-contact-status.active-typing {
 .wa-header-icons {
   display: flex;
   align-items: center;
-  gap: 1.1rem;
-  color: #54656f;
-  font-size: 1.1rem;
-  padding-right: 0.4rem;
+  gap: 0.15rem;
 }
-body.theme-dark .wa-header-icons {
+
+.wa-icon-action-btn {
+  background: transparent;
+  border: none;
+  color: #54656f;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  padding: 0;
+}
+.wa-icon-action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+body.theme-dark .wa-icon-action-btn {
   color: #aebac1;
+}
+body.theme-dark .wa-icon-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 /* Chat Messages Viewport */
@@ -1724,49 +1857,124 @@ body.theme-dark .wa-typing-bubble {
   }
 }
 
-/* Phone Bottom Input Bar */
+/* Modernized WhatsApp Android Floating Bottom Input Bar */
 .wa-bottom-bar {
-  height: 52px;
-  background-color: var(--wa-light-header);
+  height: 56px;
+  background-color: transparent;
   display: flex;
   align-items: center;
-  padding: 0 0.65rem;
-  gap: 0.6rem;
+  padding: 0 0.5rem;
+  gap: 0.45rem;
   z-index: 10;
+  flex-shrink: 0;
 }
 body.theme-dark .wa-bottom-bar {
-  background-color: var(--wa-dark-header);
+  background-color: transparent;
 }
 
 .wa-input-pill {
   flex: 1;
   background-color: #ffffff;
-  height: 36px;
-  border-radius: 18px;
+  height: 44px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
-  padding: 0 0.85rem;
+  padding: 0 0.4rem 0 0.5rem;
   color: #8696a0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 2px rgba(11, 20, 26, 0.12);
+  min-width: 0;
 }
 body.theme-dark .wa-input-pill {
-  background-color: #2a3942;
+  background-color: #1f2c34;
   color: #8696a0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
-.wa-mic-round-btn {
-  width: 36px;
-  height: 36px;
+.wa-input-inline-btn {
+  background: transparent;
+  border: none;
+  color: #8696a0;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background-color: var(--wa-green-dark);
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.wa-input-inline-btn:hover {
+  color: #54656f;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+body.theme-dark .wa-input-inline-btn:hover {
+  color: #d1d7db;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.wa-input-placeholder {
+  flex: 1;
+  padding: 0 0.45rem;
+  color: #8696a0;
+  font-size: 0.92rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", sans-serif;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wa-mic-round-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #00a884;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 5px rgba(11, 20, 26, 0.22);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.wa-mic-round-btn:hover {
+  transform: scale(1.05);
+  background-color: #008f6f;
 }
 body.theme-dark .wa-mic-round-btn {
-  background-color: var(--wa-green-primary);
+  background-color: #00a884;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+body.theme-dark .wa-mic-round-btn:hover {
+  background-color: #02b68f;
+}
+
+/* Modern Android Bottom Gesture Navigation Bar */
+.android-nav-bar {
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding-bottom: 4px;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.android-nav-pill {
+  width: 108px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: rgba(17, 27, 33, 0.35);
+  transition: background-color 0.2s ease;
+}
+body.theme-dark .android-nav-pill {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Modals */
