@@ -954,7 +954,8 @@ class AnimationRenderer {
     }
   }
 
-  drawVoiceNote(ctx, msg, elapsed, x, y, w, h, scale, isDark, isSender, settings = {}) {
+  drawVoiceNote(ctx, msg, elapsed, x, y, w, h, scale, isDark, isSender = false, settings = {}) {
+    const isSenderBool = isSender !== undefined ? Boolean(isSender) : (msg?.sender === 'sender');
     const audioDur = parseFloat(msg.audioDuration) || 3.0;
     const progress = Math.min(1.0, Math.max(0.0, elapsed / audioDur));
     const isPlaying = elapsed > 0 && elapsed < audioDur;
@@ -991,7 +992,7 @@ class AnimationRenderer {
     const thumbX = x + w - 24 * scale;
     const thumbY = y + 22 * scale;
 
-    const avatarSrc = isSender
+    const avatarSrc = isSenderBool
       ? settings?.senderAvatar
       : (settings?.receiverAvatar || settings?.contactAvatar);
     const avatarImg = avatarSrc ? this.getImage(avatarSrc) : null;
@@ -1007,14 +1008,14 @@ class AnimationRenderer {
     } else {
       ctx.beginPath();
       ctx.arc(thumbX, thumbY, thumbR, 0, Math.PI * 2);
-      ctx.fillStyle = isSender ? '#075e54' : (settings?.receiverAvatarBg || '#00a884');
+      ctx.fillStyle = isSenderBool ? '#075e54' : (settings?.receiverAvatarBg || '#00a884');
       ctx.fill();
 
       ctx.fillStyle = '#ffffff';
       ctx.font = `600 ${11 * scale}px Roboto, -apple-system, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const init = isSender ? 'M' : ((settings?.contactName || 'Sarah').charAt(0).toUpperCase());
+      const init = isSenderBool ? 'M' : ((settings?.contactName || 'Sarah').charAt(0).toUpperCase());
       ctx.fillText(init, thumbX, thumbY);
     }
 
@@ -1097,12 +1098,13 @@ class AnimationRenderer {
     ctx.fillText('1x', speedX + speedW / 2, speedY + speedH / 2);
 
     // Time & ticks
-    this.drawBubbleMeta(ctx, msg.time, msg.status, isSender, x + w - 10 * scale, y + h - 8 * scale, scale, isDark);
+    this.drawBubbleMeta(ctx, msg.time, msg.status, isSenderBool, x + w - 10 * scale, y + h - 8 * scale, scale, isDark);
 
     ctx.restore();
   }
 
-  drawBubbleMeta(ctx, time, status, isSender, rightX, bottomY, scale, isDark) {
+  drawBubbleMeta(ctx, time, status, isSender = false, rightX, bottomY, scale, isDark) {
+    const isSenderBool = Boolean(isSender);
     ctx.save();
     ctx.font = `400 ${11 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
     ctx.fillStyle = isDark ? '#8696a0' : '#667781';
@@ -1110,7 +1112,7 @@ class AnimationRenderer {
     ctx.textBaseline = 'bottom';
 
     let xPos = rightX;
-    if (isSender) {
+    if (isSenderBool) {
       const isBlue = status === 'read';
       const tickColor = isBlue ? '#53bdeb' : (isDark ? '#8696a0' : '#667781');
       ctx.strokeStyle = tickColor;
