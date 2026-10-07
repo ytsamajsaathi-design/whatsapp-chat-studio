@@ -1173,60 +1173,59 @@ class AnimationRenderer {
     ctx.fill();
     ctx.restore();
 
+    const iconColor = isDark ? '#8696a0' : '#8696a0';
+    const drawSvgIcon = (svgStr, px, py, size, rotateRad = 0) => {
+      ctx.save();
+      ctx.translate(px, py);
+      if (rotateRad && ctx.rotate) ctx.rotate(rotateRad);
+      ctx.scale((size * scale) / 24, (size * scale) / 24);
+      ctx.translate(-12, -12);
+      ctx.fillStyle = iconColor;
+      const path = new Path2D(svgStr);
+      ctx.fill(path);
+      ctx.restore();
+    };
+
     // Inside Pill:
     // A. Emoji Smiley Face on the left
-    const emojiX = pillX + 18 * scale;
-    const emojiY = pillY + pillH / 2;
-    const emojiR = 8.5 * scale;
-    ctx.strokeStyle = '#8696a0';
-    ctx.lineWidth = 1.5 * scale;
-    ctx.beginPath();
-    ctx.arc(emojiX, emojiY, emojiR, 0, Math.PI * 2);
-    ctx.stroke();
-    // Eyes
-    ctx.fillStyle = '#8696a0';
-    ctx.beginPath();
-    ctx.arc(emojiX - 3 * scale, emojiY - 2.5 * scale, 1.2 * scale, 0, Math.PI * 2);
-    ctx.arc(emojiX + 3 * scale, emojiY - 2.5 * scale, 1.2 * scale, 0, Math.PI * 2);
-    ctx.fill();
-    // Smile
-    ctx.beginPath();
-    ctx.arc(emojiX, emojiY + 0.5 * scale, 4.5 * scale, Math.PI * 0.15, Math.PI * 0.85);
-    ctx.stroke();
+    const emojiX = pillX + 20 * scale;
+    drawSvgIcon(
+      'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z',
+      emojiX,
+      cy,
+      20
+    );
 
     // B. Placeholder Text "Message"
-    ctx.fillStyle = '#8696a0';
-    ctx.font = `400 ${14 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+    ctx.fillStyle = isDark ? '#8696a0' : '#8696a0';
+    ctx.font = `400 ${14.5 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Message', emojiX + 16 * scale, emojiY);
+    ctx.fillText('Message', emojiX + 16 * scale, cy);
 
-    // C. Attachment Paperclip Icon
-    const clipX = pillX + pillW - 46 * scale;
-    const clipY = emojiY;
-    ctx.strokeStyle = '#8696a0';
-    ctx.lineWidth = 1.5 * scale;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(clipX - 2.5 * scale, clipY + 4.5 * scale);
-    ctx.lineTo(clipX + 3 * scale, clipY - 3 * scale);
-    ctx.arc(clipX + 5 * scale, clipY - 5 * scale, 2.5 * scale, Math.PI * 0.75, Math.PI * 1.75, true);
-    ctx.stroke();
+    // C. Attachment Paperclip Icon (Modern WhatsApp angled paperclip)
+    const clipX = pillX + pillW - 48 * scale;
+    drawSvgIcon(
+      'M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z',
+      clipX,
+      cy,
+      19,
+      Math.PI / 4 // 45 deg tilt like WhatsApp Android
+    );
 
-    // D. Camera Icon
+    // D. Camera Icon (Modern WhatsApp camera with lens cutout & center dot)
     const camX = pillX + pillW - 20 * scale;
-    const camY = emojiY;
-    ctx.strokeStyle = '#8696a0';
-    ctx.fillStyle = '#8696a0';
-    ctx.lineWidth = 1.5 * scale;
-    // Camera body
+    ctx.save();
+    ctx.translate(camX, cy);
+    ctx.scale((19 * scale) / 24, (19 * scale) / 24);
+    ctx.translate(-12, -12);
+    ctx.fillStyle = iconColor;
+    const camBody = new Path2D('M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z');
+    ctx.fill(camBody);
     ctx.beginPath();
-    this.roundRect(ctx, camX - 7 * scale, camY - 5.5 * scale, 14 * scale, 11 * scale, 2 * scale);
-    ctx.stroke();
-    // Lens circle
-    ctx.beginPath();
-    ctx.arc(camX, camY + 0.5 * scale, 2.8 * scale, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.arc(12, 12, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
 
     // 2. Floating Circular Green Mic Button on the Right
     const micX = x + w - 26 * scale;
@@ -1244,24 +1243,14 @@ class AnimationRenderer {
     ctx.restore();
 
     // White microphone icon inside button
+    ctx.save();
+    ctx.translate(micX, micY);
+    ctx.scale((20 * scale) / 24, (20 * scale) / 24);
+    ctx.translate(-12, -12);
     ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5 * scale;
-    // Capsule
-    ctx.beginPath();
-    this.roundRect(ctx, micX - 2.5 * scale, micY - 6.5 * scale, 5 * scale, 9 * scale, 2.5 * scale);
-    ctx.fill();
-    // Cradle
-    ctx.beginPath();
-    ctx.arc(micX, micY - 1 * scale, 4.8 * scale, 0, Math.PI);
-    ctx.stroke();
-    // Stem & base
-    ctx.beginPath();
-    ctx.moveTo(micX, cy + 3.8 * scale);
-    ctx.lineTo(micX, cy + 6.8 * scale);
-    ctx.moveTo(micX - 3.2 * scale, cy + 6.8 * scale);
-    ctx.lineTo(micX + 3.2 * scale, cy + 6.8 * scale);
-    ctx.stroke();
+    const micPath = new Path2D('M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z');
+    ctx.fill(micPath);
+    ctx.restore();
 
     ctx.restore();
   }
