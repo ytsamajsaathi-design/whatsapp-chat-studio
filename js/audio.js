@@ -186,8 +186,8 @@ class AudioManager {
           sum += Math.abs(channelData[start + j]);
         }
         const avg = count > 0 ? sum / count : 0.2;
-        // Normalize with minimum height
-        const normalized = Math.min(1.0, Math.max(0.15, avg * 3.5));
+        // Normalize with minimum height - boost quiet voices using power curve and elevated baseline
+        const normalized = Math.min(1.0, Math.max(0.22, Math.pow(avg * 4.0, 0.75)));
         waveform.push(Number(normalized.toFixed(2)));
       }
       return waveform;
@@ -201,12 +201,12 @@ class AudioManager {
    */
   static generateRealisticWaveform(barCount = 35) {
     const bars = [];
-    let current = 0.35;
+    let current = 0.45;
     for (let i = 0; i < barCount; i++) {
-      // Natural speech cadence has pauses and peaks
-      const cadence = Math.sin(i * 0.4) * 0.3 + Math.cos(i * 0.8) * 0.2;
-      const noise = (Math.random() - 0.5) * 0.25;
-      current = Math.min(0.95, Math.max(0.18, 0.4 + cadence + noise));
+      // Natural speech cadence with pronounced heights even for quieter passages
+      const cadence = Math.sin(i * 0.4) * 0.28 + Math.cos(i * 0.8) * 0.2;
+      const noise = (Math.random() - 0.5) * 0.22;
+      current = Math.min(0.98, Math.max(0.24, 0.50 + cadence + noise));
       bars.push(Number(current.toFixed(2)));
     }
     return bars;

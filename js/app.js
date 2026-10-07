@@ -2431,7 +2431,8 @@ class WhatsAppStudioApp {
         if (msg.type === 'voice') {
           const waveform = msg.waveform && msg.waveform.length ? msg.waveform : AudioManager.generateRealisticWaveform(28);
           const barsHtml = waveform.slice(0, 26).map((val, bIdx) => {
-            const barH = Math.max(4, val * 22);
+            const normalizedVal = Math.min(1.0, Math.max(0.05, Number(val) || 0));
+            const barH = Math.round(7 + Math.pow(normalizedVal, 0.65) * 25);
             return `<div class="wa-wave-bar" data-idx="${bIdx}" style="height:${barH}px;"></div>`;
           }).join('');
 
@@ -2815,5 +2816,15 @@ window.addEventListener('DOMContentLoaded', () => {
   window.app = new WhatsAppStudioApp();
   if (window.location.hash === '#voicelibrary') {
     setTimeout(() => window.app.openVoiceLibraryModal(), 100);
+  }
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('t')) {
+    const seekT = parseFloat(urlParams.get('t'));
+    if (!isNaN(seekT)) {
+      setTimeout(() => {
+        window.app.currentTime = seekT;
+        window.app.updatePreviewAtTime(seekT);
+      }, 100);
+    }
   }
 });

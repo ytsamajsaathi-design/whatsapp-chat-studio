@@ -759,8 +759,8 @@ class AnimationRenderer {
       let bubbleH = 0;
       let bubbleW = maxBubbleW;
       if (m.type === 'voice') {
-        bubbleH = 58 * scale;
-        bubbleW = Math.min(viewW * 0.82, 275 * scale);
+        bubbleH = 64 * scale;
+        bubbleW = Math.min(viewW * 0.82, 280 * scale);
       } else {
         const textLines = this.wrapText(ctx, m.text, maxBubbleW - 28 * scale, `400 ${14.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`);
         const textMetrics = textLines.map(l => ctx.measureText(l).width);
@@ -1000,33 +1000,36 @@ class AnimationRenderer {
     ctx.fill();
     ctx.fillRect(badgeX - 0.8 * scale, badgeY - 0.8 * scale, 1.6 * scale, 2.4 * scale);
 
-    // Waveform bars
+    // Waveform bars (Substantially taller, lifted quiet baseline)
     const waveX = btnX + btnR + 10 * scale;
     const waveW = w - (waveX - x) - 52 * scale;
     const barCount = 26;
-    const barW = Math.max(2 * scale, waveW / (barCount * 1.6));
-    const gap = barW * 0.6;
+    const barW = Math.max(2.4 * scale, waveW / (barCount * 1.55));
+    const gap = barW * 0.55;
+    const waveCenterY = y + 24 * scale;
 
     const waveform = msg.waveform && msg.waveform.length >= barCount
       ? msg.waveform
       : AudioManager.generateRealisticWaveform(barCount);
 
     for (let i = 0; i < barCount; i++) {
-      const barH = Math.max(4 * scale, waveform[i] * 24 * scale);
+      const normalizedVal = Math.min(1.0, Math.max(0.05, Number(waveform[i]) || 0));
+      const barH = Math.round(7 + Math.pow(normalizedVal, 0.65) * 25) * scale;
       const bx = waveX + i * (barW + gap);
-      const by = y + h / 2 - barH / 2;
+      const by = waveCenterY - barH / 2;
       const isPlayed = (i / barCount) <= progress;
 
       ctx.fillStyle = isPlayed
         ? (isDark ? '#00a884' : '#008069')
         : (isDark ? '#505d65' : '#b0b8bc');
-      ctx.fillRect(bx, by, barW, barH);
+      this.roundRect(ctx, bx, by, barW, barH, 1.4 * scale);
+      ctx.fill();
     }
 
     // Scrubber dot
     const scrubX = waveX + (progress * (barCount * (barW + gap)));
     ctx.beginPath();
-    ctx.arc(scrubX, y + h / 2, 3.8 * scale, 0, Math.PI * 2);
+    ctx.arc(scrubX, waveCenterY, 4 * scale, 0, Math.PI * 2);
     ctx.fillStyle = isDark ? '#00a884' : '#008069';
     ctx.fill();
 

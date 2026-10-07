@@ -1534,14 +1534,15 @@ body.theme-dark .wa-ticks:not(.blue) svg .tick-stroke {
   display: flex;
   align-items: center;
   gap: 2.2px;
-  height: 24px;
+  height: 34px;
 }
 
 .wa-wave-bar {
-  width: 2.5px;
+  width: 2.8px;
   background-color: #b0b8bc;
   border-radius: 2px;
   transition: background-color 0.1s ease;
+  min-height: 7px;
 }
 body.theme-dark .wa-wave-bar {
   background-color: #505d65;
