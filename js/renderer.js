@@ -932,17 +932,12 @@ class AnimationRenderer {
 
       ctx.save();
       ctx.globalAlpha = typeOpacity;
-      ctx.translate(typeX + (isSender ? typeW : 0), currentY + typeH / 2);
+      ctx.translate(typeX, currentY + typeH / 2);
       ctx.scale(typeScale, typeScale);
-      ctx.translate(-(typeX + (isSender ? typeW : 0)), -(currentY + typeH / 2));
+      ctx.translate(-typeX, -(currentY + typeH / 2));
 
       ctx.fillStyle = isDark ? '#202c33' : '#ffffff';
-      ctx.beginPath();
-      if (isSender) {
-        this.roundRect(ctx, typeX, currentY, typeW, typeH, [14 * scale, 4 * scale, 14 * scale, 14 * scale]);
-      } else {
-        this.roundRect(ctx, typeX, currentY, typeW, typeH, [4 * scale, 14 * scale, 14 * scale, 14 * scale]);
-      }
+      this.roundRect(ctx, typeX, currentY, typeW, typeH, [4 * scale, 14 * scale, 14 * scale, 14 * scale]);
       ctx.fill();
 
       // 3 Bouncing Dots
