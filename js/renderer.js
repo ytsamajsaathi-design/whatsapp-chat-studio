@@ -315,6 +315,7 @@ class AnimationRenderer {
   }
 
   roundRect(ctx, x, y, w, h, radii) {
+    ctx.beginPath();
     let rTopLeft = 0, rTopRight = 0, rBottomRight = 0, rBottomLeft = 0;
     if (Array.isArray(radii)) {
       [rTopLeft, rTopRight, rBottomRight, rBottomLeft] = radii;
@@ -703,7 +704,7 @@ class AnimationRenderer {
 
     const maxBubbleW = Math.min(viewW * 0.78, 280 * scale);
     const msgHeights = messages.map(m => {
-      if (m.type === 'voice') return 58 * scale;
+      if (m.type === 'voice') return 64 * scale;
       const textLines = this.wrapText(this.ctx, m.text, maxBubbleW - 28 * scale, `400 ${14.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`);
       return Math.max(38 * scale, (textLines.length * 20 * scale) + 24 * scale);
     });
@@ -918,11 +919,10 @@ class AnimationRenderer {
     }
 
     // Draw typing indicator bubble if active with smooth pop-in
-    if (isTyping) {
-      const isSender = typingSender === 'sender';
+    if (isTyping && typingSender === 'receiver') {
       const typeW = 56 * scale;
       const typeH = 32 * scale;
-      const typeX = isSender ? (viewX + viewW - typeW - 14 * scale) : (viewX + 14 * scale);
+      const typeX = viewX + 14 * scale;
 
       const typingEvt = timeline.events.find(e => e.type === 'typing_start' && t >= e.time);
       const typingElapsed = typingEvt ? Math.max(0, t - typingEvt.time) : 1.0;
@@ -975,16 +975,19 @@ class AnimationRenderer {
     ctx.arc(btnX, btnY, btnR, 0, Math.PI * 2);
     ctx.fill();
 
-    // Play/Pause icon inside
+    // Play/Pause icon inside button
     ctx.fillStyle = '#ffffff';
     if (isPlaying) {
-      ctx.fillRect(btnX - 4.5 * scale, btnY - 5 * scale, 2.8 * scale, 10 * scale);
-      ctx.fillRect(btnX + 1.8 * scale, btnY - 5 * scale, 2.8 * scale, 10 * scale);
+      this.roundRect(ctx, btnX - 4.5 * scale, btnY - 5 * scale, 2.8 * scale, 10 * scale, 1 * scale);
+      ctx.fill();
+      this.roundRect(ctx, btnX + 1.7 * scale, btnY - 5 * scale, 2.8 * scale, 10 * scale, 1 * scale);
+      ctx.fill();
     } else {
       ctx.beginPath();
-      ctx.moveTo(btnX - 3 * scale, btnY - 6 * scale);
-      ctx.lineTo(btnX + 6 * scale, btnY);
-      ctx.lineTo(btnX - 3 * scale, btnY + 6 * scale);
+      ctx.moveTo(btnX - 3.5 * scale, btnY - 6 * scale);
+      ctx.lineTo(btnX + 5.5 * scale, btnY);
+      ctx.lineTo(btnX - 3.5 * scale, btnY + 6 * scale);
+      ctx.closePath();
       ctx.fill();
     }
 
@@ -1009,11 +1012,11 @@ class AnimationRenderer {
     } else {
       ctx.beginPath();
       ctx.arc(thumbX, thumbY, thumbR, 0, Math.PI * 2);
-      ctx.fillStyle = isSender ? '#1e7e34' : (settings?.receiverAvatarBg || '#00a884');
+      ctx.fillStyle = isSender ? '#075e54' : (settings?.receiverAvatarBg || '#00a884');
       ctx.fill();
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = `600 ${11 * scale}px sans-serif`;
+      ctx.font = `600 ${11 * scale}px Roboto, -apple-system, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const init = isSender ? 'M' : ((settings?.contactName || 'Sarah').charAt(0).toUpperCase());
@@ -1056,8 +1059,9 @@ class AnimationRenderer {
       const barH = Math.round(7 + Math.pow(normalizedVal, 0.65) * 25) * scale;
       const bx = waveX + i * (barW + gap);
       const by = waveCenterY - barH / 2;
-      const isPlayed = (i / barCount) <= progress;
+      const isPlayed = progress > 0 && (i / barCount) <= progress;
 
+      ctx.beginPath();
       ctx.fillStyle = isPlayed
         ? (isDark ? '#00a884' : '#008069')
         : (isDark ? '#505d65' : '#b0b8bc');
@@ -1065,23 +1069,37 @@ class AnimationRenderer {
       ctx.fill();
     }
 
-    // Scrubber dot
-    const scrubX = waveX + (progress * (barCount * (barW + gap)));
+    // Scrubber dot with exact alignment to bar centers
+    const scrubX = waveX + (progress * ((barCount - 1) * (barW + gap))) + (barW / 2);
     ctx.beginPath();
-    ctx.arc(scrubX, waveCenterY, 4 * scale, 0, Math.PI * 2);
+    ctx.arc(scrubX, waveCenterY, 4.2 * scale, 0, Math.PI * 2);
     ctx.fillStyle = isDark ? '#00a884' : '#008069';
     ctx.fill();
 
     // Duration text & 1x speed badge
     ctx.fillStyle = isDark ? '#8696a0' : '#667781';
-    ctx.font = `500 ${11 * scale}px sans-serif`;
+    ctx.font = `500 ${11 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     const currentTimeText = AudioManager.formatDuration(isPlaying ? elapsed : audioDur);
     ctx.fillText(currentTimeText, waveX, y + h - 16 * scale);
 
-    ctx.font = `600 ${9.5 * scale}px sans-serif`;
-    ctx.fillText('1x', waveX + 32 * scale, y + h - 15.5 * scale);
+    const timeMetrics = ctx.measureText(currentTimeText);
+    const speedX = waveX + timeMetrics.width + 8 * scale;
+    const speedY = y + h - 17.5 * scale;
+    const speedW = 19 * scale;
+    const speedH = 13 * scale;
+
+    // Subtle 1x pill background like modern WhatsApp Android
+    ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    this.roundRect(ctx, speedX, speedY, speedW, speedH, 3.5 * scale);
+    ctx.fill();
+
+    ctx.fillStyle = isDark ? '#8696a0' : '#667781';
+    ctx.font = `600 ${9.5 * scale}px Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('1x', speedX + speedW / 2, speedY + speedH / 2);
 
     // Time & ticks
     this.drawBubbleMeta(ctx, msg.time, msg.status, isSender, x + w - 10 * scale, y + h - 8 * scale, scale, isDark);

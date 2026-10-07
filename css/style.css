@@ -1663,11 +1663,19 @@ body.theme-dark .wa-ticks:not(.blue) svg .tick-stroke {
   gap: 0.25rem;
 }
 
+.wa-waveform-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .wa-waveform-bars {
   display: flex;
   align-items: center;
   gap: 2.2px;
   height: 34px;
+  width: 100%;
 }
 
 .wa-wave-bar {
@@ -1688,6 +1696,24 @@ body.theme-dark .wa-wave-bar.played {
   background-color: var(--wa-green-primary);
 }
 
+.wa-voice-scrubber-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--wa-green-dark);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  left: 0%;
+  transition: left 0.05s linear;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  z-index: 3;
+}
+body.theme-dark .wa-voice-scrubber-dot {
+  background-color: var(--wa-green-primary);
+}
+
 .wa-voice-time-row {
   display: flex;
   justify-content: space-between;
@@ -1696,6 +1722,20 @@ body.theme-dark .wa-wave-bar.played {
   color: var(--wa-light-meta);
 }
 body.theme-dark .wa-voice-time-row {
+  color: var(--wa-dark-meta);
+}
+
+.wa-voice-speed-pill {
+  font-weight: 600;
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--wa-light-meta);
+  line-height: 1.2;
+}
+body.theme-dark .wa-voice-speed-pill {
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--wa-dark-meta);
 }
 
@@ -1736,6 +1776,9 @@ body.theme-dark .wa-voice-time-row {
   justify-content: center;
   font-size: 0.55rem;
   z-index: 2;
+}
+.wa-mic-badge svg {
+  display: block;
 }
 
 /* Persona Avatar Chip in Toolbar */

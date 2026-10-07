@@ -2460,17 +2460,25 @@ class WhatsAppStudioApp {
               <div class="wa-voice-player">
                 <button class="wa-voice-play-btn" type="button">▶</button>
                 <div class="wa-voice-waveform-wrap">
-                  <div class="wa-waveform-bars">
-                    ${barsHtml}
+                  <div class="wa-waveform-container">
+                    <div class="wa-waveform-bars">
+                      ${barsHtml}
+                    </div>
+                    <div class="wa-voice-scrubber-dot"></div>
                   </div>
                   <div class="wa-voice-time-row">
                     <span class="wa-voice-timer">${AudioManager.formatDuration(msg.audioDuration)}</span>
-                    <span style="font-weight:600; font-size:0.65rem;">1x</span>
+                    <span class="wa-voice-speed-pill">1x</span>
                   </div>
                 </div>
                 <div class="wa-voice-avatar-thumb" style="${hasPhoto ? 'background:transparent;' : ''}">
                   ${avatarHtml}
-                  <div class="wa-mic-badge">🎙️</div>
+                  <div class="wa-mic-badge">
+                    <svg viewBox="0 0 24 24" width="8.5" height="8.5" fill="#ffffff">
+                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
               <div class="wa-bubble-meta">
@@ -2537,8 +2545,13 @@ class WhatsAppStudioApp {
         const bars = mounted.element.querySelectorAll('.wa-wave-bar');
         const activeBarCount = Math.floor(progress * bars.length);
         bars.forEach((bar, bIdx) => {
-          bar.classList.toggle('played', bIdx <= activeBarCount);
+          bar.classList.toggle('played', progress > 0 && bIdx <= activeBarCount);
         });
+
+        const scrubberDot = mounted.element.querySelector('.wa-voice-scrubber-dot');
+        if (scrubberDot) {
+          scrubberDot.style.left = `${(progress * 100).toFixed(1)}%`;
+        }
       }
     });
 
