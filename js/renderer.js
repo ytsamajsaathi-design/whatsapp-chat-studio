@@ -37,19 +37,29 @@ class AnimationRenderer {
   }
 
   /**
-   * Preload all avatar images prior to export
+   * Preload all avatar and message images prior to export
    */
-  async preloadAllImages(settings) {
+  async preloadAllImages(settings, messages = []) {
     const urls = [
       settings?.contactAvatar,
       settings?.senderAvatar,
       settings?.receiverAvatar
-    ].filter(Boolean);
+    ];
 
-    await Promise.all(urls.map(url => new Promise((resolve) => {
+    if (Array.isArray(messages)) {
+      for (const msg of messages) {
+        if (msg && msg.type === 'image' && msg.imageUrl) {
+          urls.push(msg.imageUrl);
+        }
+      }
+    }
+
+    const filtered = urls.filter(Boolean);
+
+    await Promise.all(filtered.map(url => new Promise((resolve) => {
       if (this.imageCache.has(url)) {
         const cached = this.imageCache.get(url);
-        if (cached && cached.complete && cached.naturalWidth > 0) return resolve(cached);
+        if (cached && cached.complete && (cached.naturalWidth > 0 || cached.width > 0)) return resolve(cached);
       }
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -698,15 +708,50 @@ class AnimationRenderer {
     return badgeH + 7 * scale + dateH;
   }
 
+  measureMessage(ctx, m, viewW, scale) {
+    const maxBubbleW = Math.min(viewW * 0.78, 280 * scale);
+    if (m.type === 'voice') {
+      return {
+        bubbleW: Math.min(viewW * 0.82, 280 * scale),
+        bubbleH: 64 * scale
+      };
+    }
+    if (m.type === 'image') {
+      const imgW = Math.min(viewW * 0.72, 250 * scale);
+      const imgH = Math.round(imgW * 0.75); // 4:3 standard aspect ratio
+      const bubbleW = imgW + 6 * scale; // 3px padding on each side
+      const hasCaption = m.text && m.text.trim().length > 0;
+      if (!hasCaption) {
+        return {
+          bubbleW: bubbleW,
+          bubbleH: imgH + 6 * scale
+        };
+      }
+      const captionFont = `400 ${13.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      const lines = this.wrapText(ctx, m.text, imgW - 10 * scale, captionFont);
+      const captionH = lines.length * (18 * scale) + 6 * scale;
+      const metaH = 16 * scale;
+      return {
+        bubbleW: bubbleW,
+        bubbleH: imgH + 6 * scale + captionH + metaH
+      };
+    }
+    // Text message
+    const font = `400 ${14.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    const textLines = this.wrapText(ctx, m.text || '', maxBubbleW - 28 * scale, font);
+    const textMetrics = textLines.map(l => ctx.measureText(l).width);
+    const maxLineWidth = Math.max(...textMetrics, 50 * scale);
+    const bubbleW = Math.min(maxBubbleW, Math.max(85 * scale, maxLineWidth + 32 * scale));
+    const bubbleH = Math.max(38 * scale, (textLines.length * 20 * scale) + 24 * scale);
+    return { bubbleW, bubbleH };
+  }
+
   buildScrollMilestones(timeline, messages, viewW, viewH, scale) {
     const topBadgesH = 63 * scale;
     const typingHeight = 34 * scale;
 
-    const maxBubbleW = Math.min(viewW * 0.78, 280 * scale);
     const msgHeights = messages.map(m => {
-      if (m.type === 'voice') return 64 * scale;
-      const textLines = this.wrapText(this.ctx, m.text, maxBubbleW - 28 * scale, `400 ${14.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`);
-      return Math.max(38 * scale, (textLines.length * 20 * scale) + 24 * scale);
+      return this.measureMessage(this.ctx, m, viewW, scale).bubbleH;
     });
 
     const milestones = [{ time: 0, scroll: 0, startScroll: 0, duration: 0.42 }];
@@ -791,23 +836,9 @@ class AnimationRenderer {
     }
 
     // Measure visible message heights
-    const maxBubbleW = Math.min(viewW * 0.78, 280 * scale);
     const renderedItems = [];
-
     for (const item of visibleMessages) {
-      const m = item.msg;
-      let bubbleH = 0;
-      let bubbleW = maxBubbleW;
-      if (m.type === 'voice') {
-        bubbleH = 64 * scale;
-        bubbleW = Math.min(viewW * 0.82, 280 * scale);
-      } else {
-        const textLines = this.wrapText(ctx, m.text, maxBubbleW - 28 * scale, `400 ${14.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`);
-        const textMetrics = textLines.map(l => ctx.measureText(l).width);
-        const maxLineWidth = Math.max(...textMetrics, 50 * scale);
-        bubbleW = Math.min(maxBubbleW, Math.max(85 * scale, maxLineWidth + 32 * scale));
-        bubbleH = Math.max(38 * scale, (textLines.length * 20 * scale) + 24 * scale);
-      }
+      const { bubbleW, bubbleH } = this.measureMessage(ctx, item.msg, viewW, scale);
       renderedItems.push({
         ...item,
         height: bubbleH,
@@ -898,6 +929,8 @@ class AnimationRenderer {
       // Content
       if (msg.type === 'voice') {
         this.drawVoiceNote(ctx, msg, t - item.appearTime, bubbleX, currentY, bubbleW, bubbleH, scale, isDark, isSender, settings);
+      } else if (msg.type === 'image') {
+        this.drawImageMessage(ctx, msg, bubbleX, currentY, bubbleW, bubbleH, scale, isDark, isSender, settings);
       } else {
         // Text content
         ctx.fillStyle = isDark ? '#e9edef' : '#111b21';
@@ -1152,6 +1185,163 @@ class AnimationRenderer {
     ctx.restore();
   }
 
+  drawImageMessage(ctx, msg, x, y, w, h, scale, isDark, isSender = false, settings = {}) {
+    const isSenderBool = isSender !== undefined ? Boolean(isSender) : (msg?.sender === 'sender');
+    const pad = 3 * scale;
+    const imgX = x + pad;
+    const imgY = y + pad;
+    const imgW = w - (pad * 2);
+    const imgH = Math.round(imgW * 0.75);
+    const hasCaption = msg.text && msg.text.trim().length > 0;
+
+    // 1. Draw Image with rounded corners & aspect-ratio cover
+    const defaultUrl = (typeof STUDIO_IMAGE_PRESETS !== 'undefined' && STUDIO_IMAGE_PRESETS.beach)
+      ? STUDIO_IMAGE_PRESETS.beach.url
+      : '';
+    const imgUrl = msg.imageUrl || defaultUrl;
+    let cachedImg = imgUrl ? this.imageCache.get(imgUrl) : null;
+    if (!cachedImg && imgUrl && typeof Image !== 'undefined') {
+      cachedImg = new Image();
+      cachedImg.crossOrigin = 'anonymous';
+      cachedImg.src = imgUrl;
+      this.imageCache.set(imgUrl, cachedImg);
+    }
+
+    ctx.save();
+    // Clip inner rounded rect for image
+    ctx.beginPath();
+    this.roundRect(ctx, imgX, imgY, imgW, imgH, 6 * scale);
+    ctx.clip();
+
+    // Subtle background placeholder while image loads
+    ctx.fillStyle = isDark ? '#1e293b' : '#e2e8f0';
+    ctx.fillRect(imgX, imgY, imgW, imgH);
+
+    if (cachedImg && (cachedImg.complete || cachedImg.naturalWidth > 0 || cachedImg.width > 0)) {
+      const srcW = cachedImg.naturalWidth || cachedImg.width || imgW;
+      const srcH = cachedImg.naturalHeight || cachedImg.height || imgH;
+      // Object-fit: cover calculation
+      const hRatio = imgW / srcW;
+      const vRatio = imgH / srcH;
+      const ratio = Math.max(hRatio, vRatio);
+      const centerShiftX = (imgW - srcW * ratio) / 2;
+      const centerShiftY = (imgH - srcH * ratio) / 2;
+
+      try {
+        ctx.drawImage(
+          cachedImg,
+          0, 0, srcW, srcH,
+          imgX + centerShiftX, imgY + centerShiftY, srcW * ratio, srcH * ratio
+        );
+      } catch (err) {
+        // Fallback drawing if canvas tainted or decoding
+        ctx.fillStyle = isDark ? '#334155' : '#cbd5e1';
+        ctx.fillRect(imgX, imgY, imgW, imgH);
+      }
+    }
+    ctx.restore();
+
+    // 2. Caption & Meta
+    if (hasCaption) {
+      // Draw caption text
+      ctx.fillStyle = isDark ? '#e9edef' : '#111b21';
+      const captionFont = `400 ${13.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      ctx.font = captionFont;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+
+      const lines = this.wrapText(ctx, msg.text, imgW - 10 * scale, captionFont);
+      const captionStartY = imgY + imgH + 5 * scale;
+      lines.forEach((line, idx) => {
+        ctx.fillText(line, imgX + 4 * scale, captionStartY + (idx * 18 * scale));
+      });
+
+      // Regular timestamp & ticks at the bottom right of the bubble
+      this.drawBubbleMeta(
+        ctx,
+        msg.time,
+        msg.status,
+        isSenderBool,
+        x + w - 8 * scale,
+        y + h - 8 * scale,
+        scale,
+        isDark
+      );
+    } else {
+      // Photo-only: Floating translucent dark pill overlay at bottom right inside the image
+      this.drawPhotoOverlayMeta(
+        ctx,
+        msg.time,
+        msg.status,
+        isSenderBool,
+        imgX + imgW - 6 * scale,
+        imgY + imgH - 6 * scale,
+        scale
+      );
+    }
+  }
+
+  drawPhotoOverlayMeta(ctx, time, status, isSender = false, rightX, bottomY, scale) {
+    const isSenderBool = Boolean(isSender);
+    ctx.save();
+    const font = `500 ${10.5 * scale}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.font = font;
+    const timeText = time || '10:45 AM';
+    const textW = ctx.measureText(timeText).width;
+    const tickW = isSenderBool ? (16 * scale + 3 * scale) : 0;
+    const pillPadX = 6 * scale;
+    const pillH = 17 * scale;
+    const pillW = textW + tickW + (pillPadX * 2);
+
+    const pillX = rightX - pillW;
+    const pillY = bottomY - pillH;
+
+    // Translucent dark pill background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.beginPath();
+    this.roundRect(ctx, pillX, pillY, pillW, pillH, 8 * scale);
+    ctx.fill();
+
+    // Timestamp text (white)
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const textY = pillY + (pillH / 2) + 0.5 * scale;
+    ctx.fillText(timeText, pillX + pillPadX, textY);
+
+    // Ticks (white or blue)
+    if (isSenderBool) {
+      const isBlue = status === 'read';
+      const tickColor = isBlue ? '#53bdeb' : '#ffffff';
+      ctx.strokeStyle = tickColor;
+      ctx.lineWidth = 1.5 * scale;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const tW = 14 * scale;
+      const tH = 9.5 * scale;
+      const ox = pillX + pillPadX + textW + 3 * scale;
+      const oy = pillY + (pillH - tH) / 2;
+
+      // Tick 1
+      ctx.beginPath();
+      ctx.moveTo(ox + 1 * scale, oy + 4.8 * scale);
+      ctx.lineTo(ox + 3.9 * scale, oy + 7.8 * scale);
+      ctx.lineTo(ox + 8.8 * scale, oy + 1.7 * scale);
+      ctx.stroke();
+
+      // Tick 2
+      if (status === 'delivered' || status === 'read') {
+        ctx.beginPath();
+        ctx.moveTo(ox + 4.4 * scale, oy + 4.8 * scale);
+        ctx.lineTo(ox + 7.4 * scale, oy + 7.8 * scale);
+        ctx.lineTo(ox + 12.3 * scale, oy + 1.7 * scale);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
   drawInputBar(ctx, x, y, w, h, scale, isDark) {
     ctx.save();
     const cy = y + h / 2;
@@ -1303,7 +1493,7 @@ class AnimationRenderer {
     this.canvas.width = width;
     this.canvas.height = height;
 
-    await this.preloadAllImages(settings);
+    await this.preloadAllImages(settings, messages);
 
     const timeline = this.buildTimeline(messages);
     const totalFrames = Math.ceil(timeline.totalDuration * fps);
@@ -1364,7 +1554,7 @@ class AnimationRenderer {
     this.canvas.width = width;
     this.canvas.height = height;
 
-    await this.preloadAllImages(settings);
+    await this.preloadAllImages(settings, messages);
 
     const timeline = this.buildTimeline(messages);
     const totalDuration = Math.max(0.5, timeline.totalDuration);
@@ -1692,7 +1882,7 @@ class AnimationRenderer {
     this.canvas.width = width;
     this.canvas.height = height;
 
-    await this.preloadAllImages(settings);
+    await this.preloadAllImages(settings, messages);
 
     const timeline = this.buildTimeline(messages);
     const totalDuration = timeline.totalDuration;

@@ -39,6 +39,78 @@ function getPresetDataUrl(preset) {
 }
 
 /**
+ * Built-in WhatsApp Image Message Presets (Zero-latency offline SVG data URIs)
+ */
+const STUDIO_IMAGE_PRESETS = {
+  beach: {
+    id: 'beach',
+    name: '🏖️ Beach Sunset',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450"><defs><linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fd5e53"/><stop offset="45%" stop-color="#ff9966"/><stop offset="70%" stop-color="#ffcc70"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient><linearGradient id="ocean" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="60%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#1e3a8a"/></linearGradient><linearGradient id="sand" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#eab308"/></linearGradient></defs><rect width="600" height="280" fill="url(#sky)"/><circle cx="300" cy="220" r="55" fill="#fef08a" opacity="0.9"/><path d="M120 280 Q210 240 320 280 Q420 250 510 280 Z" fill="#991b1b" opacity="0.3"/><rect y="280" width="600" height="110" fill="url(#ocean)"/><ellipse cx="300" cy="295" rx="80" ry="4" fill="#fef08a" opacity="0.6"/><ellipse cx="300" cy="315" rx="120" ry="5" fill="#fef08a" opacity="0.4"/><ellipse cx="300" cy="340" rx="160" ry="6" fill="#fef08a" opacity="0.3"/><path d="M0 380 Q250 350 600 390 L600 450 L0 450 Z" fill="url(#sand)"/><path d="M80 430 Q110 330 150 210 Q142 330 100 430 Z" fill="#1e293b"/><path d="M150 210 Q90 170 50 200 Q105 190 150 210" fill="#0f172a"/><path d="M150 210 Q140 140 120 120 Q150 160 150 210" fill="#0f172a"/><path d="M150 210 Q200 150 230 160 Q180 185 150 210" fill="#0f172a"/><path d="M150 210 Q220 210 240 245 Q190 220 150 210" fill="#0f172a"/><path d="M150 210 Q130 240 110 260 Q140 230 150 210" fill="#0f172a"/><path d="M370 140 Q380 130 390 140 Q400 130 410 140 Q400 135 390 142 Q380 135 370 140 Z" fill="#475569"/><path d="M420 165 Q427 157 435 165 Q442 157 450 165 Q442 161 435 167 Q427 161 420 165 Z" fill="#475569"/></svg>`
+  },
+  pizza: {
+    id: 'pizza',
+    name: '🍕 Pizza',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450"><defs><radialGradient id="table" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#334155"/><stop offset="100%" stop-color="#0f172a"/></radialGradient><linearGradient id="crust" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#eab308"/><stop offset="50%" stop-color="#ca8a04"/><stop offset="100%" stop-color="#a16207"/></linearGradient><radialGradient id="cheese" cx="45%" cy="45%" r="50%"><stop offset="0%" stop-color="#fef08a"/><stop offset="60%" stop-color="#facc15"/><stop offset="100%" stop-color="#e11d48"/></radialGradient></defs><rect width="600" height="450" fill="url(#table)"/><circle cx="300" cy="225" r="185" fill="#78350f" opacity="0.6"/><circle cx="300" cy="225" r="175" fill="#92400e"/><circle cx="300" cy="225" r="155" fill="url(#crust)"/><circle cx="300" cy="225" r="138" fill="url(#cheese)"/><circle cx="260" cy="180" r="22" fill="#b91c1c" stroke="#991b1b" stroke-width="2"/><circle cx="260" cy="180" r="18" fill="#dc2626"/><circle cx="340" cy="190" r="22" fill="#b91c1c" stroke="#991b1b" stroke-width="2"/><circle cx="340" cy="190" r="18" fill="#dc2626"/><circle cx="300" cy="250" r="24" fill="#b91c1c" stroke="#991b1b" stroke-width="2"/><circle cx="300" cy="250" r="20" fill="#dc2626"/><circle cx="240" cy="250" r="20" fill="#b91c1c" stroke="#991b1b" stroke-width="2"/><circle cx="240" cy="250" r="16" fill="#dc2626"/><circle cx="355" cy="265" r="21" fill="#b91c1c" stroke="#991b1b" stroke-width="2"/><circle cx="355" cy="265" r="17" fill="#dc2626"/><circle cx="300" cy="145" r="19" fill="#b91c1c" stroke="#991b1b" stroke-width="2"/><circle cx="300" cy="145" r="15" fill="#dc2626"/><path d="M280 205 Q295 195 305 210 Q295 215 280 205 Z" fill="#15803d"/><path d="M330 225 Q345 215 355 230 Q345 235 330 225 Z" fill="#16a34a"/><path d="M255 220 Q240 210 245 230 Q255 225 255 220 Z" fill="#15803d"/></svg>`
+  },
+  coffee: {
+    id: 'coffee',
+    name: '☕ Coffee',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450"><defs><radialGradient id="desk" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#475569"/><stop offset="100%" stop-color="#1e293b"/></radialGradient><radialGradient id="saucer" cx="45%" cy="45%" r="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="85%" stop-color="#e2e8f0"/><stop offset="100%" stop-color="#cbd5e1"/></radialGradient><radialGradient id="latte" cx="40%" cy="40%" r="50%"><stop offset="0%" stop-color="#a16207"/><stop offset="70%" stop-color="#78350f"/><stop offset="100%" stop-color="#451a03"/></radialGradient></defs><rect width="600" height="450" fill="url(#desk)"/><circle cx="300" cy="225" r="160" fill="url(#saucer)" filter="drop-shadow(0 15px 25px rgba(0,0,0,0.35))"/><circle cx="300" cy="225" r="120" fill="none" stroke="#cbd5e1" stroke-width="3"/><circle cx="300" cy="225" r="105" fill="#f8fafc" stroke="#e2e8f0" stroke-width="4"/><circle cx="300" cy="225" r="92" fill="url(#latte)"/><path d="M300 245 C285 225 260 205 260 185 C260 165 280 155 300 175 C320 155 340 165 340 185 C340 205 315 225 300 245 Z" fill="#fef3c7" opacity="0.95"/><circle cx="300" cy="182" r="12" fill="#fef3c7" opacity="0.9"/><ellipse cx="440" cy="160" rx="14" ry="9" fill="#451a03" transform="rotate(-30 440 160)"/><line x1="432" y1="160" x2="448" y2="160" stroke="#78350f" stroke-width="2" transform="rotate(-30 440 160)"/><ellipse cx="455" cy="180" rx="13" ry="8" fill="#451a03" transform="rotate(25 455 180)"/><line x1="447" y1="180" x2="463" y2="180" stroke="#78350f" stroke-width="2" transform="rotate(25 455 180)"/></svg>`
+  },
+  workspace: {
+    id: 'workspace',
+    name: '💻 Setup',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450"><defs><linearGradient id="wall" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient><linearGradient id="screen" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1e1e2e"/><stop offset="100%" stop-color="#181825"/></linearGradient></defs><rect width="600" height="450" fill="url(#wall)"/><rect y="340" width="600" height="110" fill="#334155"/><rect y="340" width="600" height="6" fill="#475569"/><rect x="285" y="270" width="30" height="70" fill="#64748b"/><ellipse cx="300" cy="340" rx="60" ry="12" fill="#475569"/><rect x="150" y="80" width="300" height="190" rx="8" fill="#0f172a" stroke="#64748b" stroke-width="3"/><rect x="158" y="88" width="284" height="174" rx="4" fill="url(#screen)"/><rect x="158" y="88" width="284" height="18" fill="#11111b"/><circle cx="170" cy="97" r="3.5" fill="#f38ba8"/><circle cx="180" cy="97" r="3.5" fill="#f9e2af"/><circle cx="190" cy="97" r="3.5" fill="#a6e3a1"/><rect x="175" y="120" width="45" height="6" rx="2" fill="#cba6f7"/><rect x="225" y="120" width="80" height="6" rx="2" fill="#89b4fa"/><rect x="190" y="135" width="110" height="6" rx="2" fill="#a6e3a1"/><rect x="190" y="150" width="70" height="6" rx="2" fill="#fab387"/><rect x="190" y="165" width="130" height="6" rx="2" fill="#89b4fa"/><rect x="175" y="180" width="30" height="6" rx="2" fill="#cba6f7"/><rect x="475" y="305" width="35" height="35" rx="3" fill="#cbd5e1"/><path d="M492 305 Q470 270 460 250 Q485 275 492 305 Z" fill="#22c55e"/><path d="M492 305 Q515 265 525 245 Q505 275 492 305 Z" fill="#16a34a"/><path d="M492 305 Q492 250 490 230 Q497 260 492 305 Z" fill="#15803d"/><rect x="210" y="355" width="180" height="40" rx="5" fill="#1e293b" stroke="#475569" stroke-width="1.5"/><rect x="220" y="362" width="160" height="26" rx="2" fill="#334155"/></svg>`
+  }
+};
+
+Object.keys(STUDIO_IMAGE_PRESETS).forEach(k => {
+  STUDIO_IMAGE_PRESETS[k].url = 'data:image/svg+xml;utf8,' + encodeURIComponent(STUDIO_IMAGE_PRESETS[k].svg);
+});
+if (typeof window !== 'undefined') {
+  window.STUDIO_IMAGE_PRESETS = STUDIO_IMAGE_PRESETS;
+}
+
+/**
+ * Resize message photo uploads to max 1080px JPEG to optimize memory & video export
+ */
+function resizeMessageImageFile(file, maxDimension = 1080, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      return reject(new Error('Invalid image file.'));
+    }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Failed to read image file.'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Failed to decode image.'));
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width;
+        let h = img.height;
+
+        if (w > maxDimension || h > maxDimension) {
+          if (w > h) {
+            h = Math.round((h * maxDimension) / w);
+            w = maxDimension;
+          } else {
+            w = Math.round((w * maxDimension) / h);
+            h = maxDimension;
+          }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
  * Resize user uploaded image files to crisp 256x256 square avatars to optimize memory & localStorage
  */
 function resizeImageFile(file, maxDimension = 256, quality = 0.85) {
@@ -197,6 +269,18 @@ class WhatsAppStudioApp {
         type: 'text',
         text: 'Yo that sounds INSANE!! Adding the 808s right now 🔥🔥',
         time: '10:45 AM',
+        status: 'read',
+        delay: 0.2,
+        audioDuration: 0,
+        waveform: []
+      },
+      {
+        id: 'msg_5',
+        sender: 'sender',
+        type: 'image',
+        text: 'Just finished the console mix! Check the setup 🎚️',
+        imageUrl: STUDIO_IMAGE_PRESETS.workspace.url,
+        time: '10:46 AM',
         status: 'read',
         delay: 0.2,
         audioDuration: 0,
@@ -1188,6 +1272,9 @@ class WhatsAppStudioApp {
     document.getElementById('addVoiceNoteBtn').addEventListener('click', () => {
       this.addMessage('receiver', 'voice');
     });
+    document.getElementById('addImageBtn')?.addEventListener('click', () => {
+      this.addMessage('sender', 'image');
+    });
 
     // Playback buttons
     this.playPauseBtn.addEventListener('click', () => this.togglePlay());
@@ -1827,10 +1914,11 @@ class WhatsAppStudioApp {
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const newMessage = {
-      id: `msg_${Date.now()}`,
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       sender: sender,
       type: type,
-      text: type === 'voice' ? 'Hey, check out this voice message!' : 'Hello there!',
+      text: type === 'voice' ? 'Hey, check out this voice message!' : (type === 'image' ? 'Look at this! 🌴' : 'Hello there!'),
+      imageUrl: type === 'image' ? STUDIO_IMAGE_PRESETS.beach.url : undefined,
       time: timeString,
       status: 'read',
       delay: 0.2,
@@ -1858,7 +1946,7 @@ class WhatsAppStudioApp {
           <div class="msg-header-left">
             <span class="msg-index-chip">#${idx + 1}</span>
             <span class="sender-badge ${msg.sender}">${msg.sender === 'sender' ? '🟢 Sender (Me)' : '🔵 Receiver (Them)'}</span>
-            <span class="type-pill">${msg.type === 'voice' ? '🎙️ Voice Note' : '💬 Text'}</span>
+            <span class="type-pill">${msg.type === 'voice' ? '🎙️ Voice Note' : (msg.type === 'image' ? '🖼️ Photo' : '💬 Text')}</span>
           </div>
           <div class="card-order-actions">
             <button title="Move Up" class="card-btn-action move-up-btn" ${idx === 0 ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''}>▲</button>
@@ -1869,38 +1957,57 @@ class WhatsAppStudioApp {
         </div>
 
         <div class="msg-card-subbar">
-          <span class="card-field-title">${msg.type === 'voice' ? '🎙️ Audio Transcript / Prompt (v4)' : '💬 Message Content'}</span>
+          <span class="card-field-title">${msg.type === 'voice' ? '🎙️ Audio Transcript / Prompt (v4)' : (msg.type === 'image' ? '🖼️ Photo & Caption' : '💬 Message Content')}</span>
           <div class="card-toggles-group">
             <button type="button" class="card-toggle-pill toggle-sender-btn" title="Switch side between Sender and Receiver">
               ⇄ Switch Side
             </button>
-            <button type="button" class="card-toggle-pill toggle-type-btn" title="Convert between Text and Voice note">
-              ${msg.type === 'voice' ? '💬 To Text' : '🎙️ To Voice'}
-            </button>
+            ${msg.type === 'voice' ? `
+              <button type="button" class="card-toggle-pill to-text-btn" title="Convert to text message">
+                💬 To Text
+              </button>
+              <button type="button" class="card-toggle-pill to-image-btn" title="Convert to photo message">
+                🖼️ To Photo
+              </button>
+            ` : (msg.type === 'image' ? `
+              <button type="button" class="card-toggle-pill to-text-btn" title="Convert to text message">
+                💬 To Text
+              </button>
+              <button type="button" class="card-toggle-pill to-voice-btn" title="Convert to voice note">
+                🎙️ To Voice
+              </button>
+            ` : `
+              <button type="button" class="card-toggle-pill to-image-btn" title="Attach photo or convert to photo message">
+                🖼️ + Photo
+              </button>
+              <button type="button" class="card-toggle-pill to-voice-btn" title="Convert to voice note">
+                🎙️ To Voice
+              </button>
+            `)}
           </div>
         </div>
 
         <div class="msg-card-body">
-          <!-- Expressive Audio Tags quick bar right above audio transcript textarea -->
-          <div class="card-audio-tags-row">
-            <span class="card-tags-label" title="Insert expressive audio tags for ElevenLabs v4">🏷️ Tags:</span>
-            <div class="card-tags-scroll">
-              <button type="button" class="card-tag-btn" data-tag="[whispering]" title="Insert whispering style">🤫 whisper</button>
-              <button type="button" class="card-tag-btn" data-tag="[shouting]" title="Insert shouting style">📢 shout</button>
-              <button type="button" class="card-tag-btn" data-tag="[laughing]" title="Insert laughing">😂 laugh</button>
-              <button type="button" class="card-tag-btn" data-tag="[sighs]" title="Insert sighs">😮‍💨 sighs</button>
-              <button type="button" class="card-tag-btn" data-tag="[gasping]" title="Insert gasping">😱 gasp</button>
-              <button type="button" class="card-tag-btn" data-tag="[excited]" title="Insert excited tone">🤩 excited</button>
-              <button type="button" class="card-tag-btn" data-tag="[angry]" title="Insert angry tone">😡 angry</button>
-              <button type="button" class="card-tag-btn" data-tag="[crying]" title="Insert crying tone">😢 cry</button>
-              <button type="button" class="card-tag-btn" data-tag="[pause]" title="Insert audio pause">⏸️ pause</button>
-            </div>
-            <button type="button" class="card-tag-btn tag-more" title="More expressive tags">+ More ▾</button>
-          </div>
-
-          <textarea class="msg-textarea" placeholder="${msg.type === 'voice' ? 'Type voice transcript or prompt with [tags]...' : 'Type message text...'}">${msg.text}</textarea>
-
           ${msg.type === 'voice' ? `
+            <!-- Expressive Audio Tags quick bar right above audio transcript textarea -->
+            <div class="card-audio-tags-row">
+              <span class="card-tags-label" title="Insert expressive audio tags for ElevenLabs v4">🏷️ Tags:</span>
+              <div class="card-tags-scroll">
+                <button type="button" class="card-tag-btn" data-tag="[whispering]" title="Insert whispering style">🤫 whisper</button>
+                <button type="button" class="card-tag-btn" data-tag="[shouting]" title="Insert shouting style">📢 shout</button>
+                <button type="button" class="card-tag-btn" data-tag="[laughing]" title="Insert laughing">😂 laugh</button>
+                <button type="button" class="card-tag-btn" data-tag="[sighs]" title="Insert sighs">😮‍💨 sighs</button>
+                <button type="button" class="card-tag-btn" data-tag="[gasping]" title="Insert gasping">😱 gasp</button>
+                <button type="button" class="card-tag-btn" data-tag="[excited]" title="Insert excited tone">🤩 excited</button>
+                <button type="button" class="card-tag-btn" data-tag="[angry]" title="Insert angry tone">😡 angry</button>
+                <button type="button" class="card-tag-btn" data-tag="[crying]" title="Insert crying tone">😢 cry</button>
+                <button type="button" class="card-tag-btn" data-tag="[pause]" title="Insert audio pause">⏸️ pause</button>
+              </div>
+              <button type="button" class="card-tag-btn tag-more" title="More expressive tags">+ More ▾</button>
+            </div>
+
+            <textarea class="msg-textarea" placeholder="Type voice transcript or prompt with [tags]...">${msg.text || ''}</textarea>
+
             <div class="voice-actions-box">
               <div class="voice-status-row">
                 <div class="voice-duration-pill">
@@ -1935,7 +2042,36 @@ class WhatsAppStudioApp {
                 </div>
               </div>
             </div>
-          ` : ''}
+          ` : (msg.type === 'image' ? `
+            <div class="image-actions-box">
+              <div class="image-preview-row">
+                <div class="image-thumbnail-wrap">
+                  <img src="${msg.imageUrl || STUDIO_IMAGE_PRESETS.beach.url}" alt="Photo Attachment" class="card-image-thumb">
+                </div>
+                <div class="image-controls-col">
+                  <div class="image-btn-row">
+                    <label class="btn btn-primary btn-sm upload-image-btn" title="Upload custom image file">
+                      <span>📁</span> Upload
+                      <input type="file" class="upload-image-input" accept="image/*" style="display:none;">
+                    </label>
+                    <button type="button" class="btn btn-secondary btn-sm remove-image-btn" title="Remove photo and switch to text">
+                      ✕ Remove
+                    </button>
+                  </div>
+                  <div class="image-presets-row">
+                    <span class="presets-label">Presets:</span>
+                    <button type="button" class="preset-tag-btn" data-preset="beach" title="Beach sunset">🏖️ Beach</button>
+                    <button type="button" class="preset-tag-btn" data-preset="pizza" title="Pizza dinner">🍕 Pizza</button>
+                    <button type="button" class="preset-tag-btn" data-preset="coffee" title="Morning coffee">☕ Coffee</button>
+                    <button type="button" class="preset-tag-btn" data-preset="workspace" title="Studio setup">💻 Setup</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <textarea class="msg-textarea" placeholder="Type photo caption (optional, leave blank for photo only)...">${msg.text || ''}</textarea>
+          ` : `
+            <textarea class="msg-textarea" placeholder="Type message text...">${msg.text || ''}</textarea>
+          `)}
         </div>
 
         <div class="msg-card-footer">
@@ -1960,12 +2096,15 @@ class WhatsAppStudioApp {
 
       // Event bindings for this card
       const textarea = card.querySelector('.msg-textarea');
-      textarea.addEventListener('input', (e) => {
-        msg.text = e.target.value;
-        this.updatePreviewAtTime(this.currentTime);
-      });
+      if (textarea) {
+        textarea.addEventListener('input', (e) => {
+          msg.text = e.target.value;
+          this.mountedBubbleNodes.delete(msg.id);
+          this.updatePreviewAtTime(this.currentTime);
+        });
+      }
 
-      // Expressive Audio Tag buttons insertion for this card
+      // Expressive Audio Tag buttons insertion for voice card
       card.querySelectorAll('.card-tag-btn:not(.tag-more)').forEach(tagBtn => {
         tagBtn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -1984,11 +2123,13 @@ class WhatsAppStudioApp {
 
       card.querySelector('.msg-time-input').addEventListener('input', (e) => {
         msg.time = e.target.value;
+        this.mountedBubbleNodes.delete(msg.id);
         this.updatePreviewAtTime(this.currentTime);
       });
 
       card.querySelector('.msg-status-select').addEventListener('change', (e) => {
         msg.status = e.target.value;
+        this.mountedBubbleNodes.delete(msg.id);
         this.updatePreviewAtTime(this.currentTime);
       });
 
@@ -2000,19 +2141,91 @@ class WhatsAppStudioApp {
 
       card.querySelector('.toggle-sender-btn').addEventListener('click', () => {
         msg.sender = msg.sender === 'sender' ? 'receiver' : 'sender';
+        this.mountedBubbleNodes.delete(msg.id);
         this.renderPipelineList();
         this.updatePreviewAtTime(this.currentTime);
       });
 
-      card.querySelector('.toggle-type-btn').addEventListener('click', () => {
-        msg.type = msg.type === 'voice' ? 'text' : 'voice';
-        if (msg.type === 'voice' && !msg.waveform.length) {
-          msg.audioDuration = 3.5;
-          msg.waveform = AudioManager.generateRealisticWaveform(32);
+      const toTextBtn = card.querySelector('.to-text-btn');
+      if (toTextBtn) {
+        toTextBtn.addEventListener('click', () => {
+          msg.type = 'text';
+          this.mountedBubbleNodes.delete(msg.id);
+          this.renderPipelineList();
+          this.updatePreviewAtTime(this.currentTime);
+        });
+      }
+
+      const toImageBtn = card.querySelector('.to-image-btn');
+      if (toImageBtn) {
+        toImageBtn.addEventListener('click', () => {
+          msg.type = 'image';
+          if (!msg.imageUrl) {
+            msg.imageUrl = STUDIO_IMAGE_PRESETS.beach.url;
+          }
+          this.mountedBubbleNodes.delete(msg.id);
+          this.renderPipelineList();
+          this.updatePreviewAtTime(this.currentTime);
+        });
+      }
+
+      const toVoiceBtn = card.querySelector('.to-voice-btn');
+      if (toVoiceBtn) {
+        toVoiceBtn.addEventListener('click', () => {
+          msg.type = 'voice';
+          if (!msg.waveform || !msg.waveform.length) {
+            msg.audioDuration = 3.5;
+            msg.waveform = AudioManager.generateRealisticWaveform(32);
+          }
+          this.mountedBubbleNodes.delete(msg.id);
+          this.renderPipelineList();
+          this.updatePreviewAtTime(this.currentTime);
+        });
+      }
+
+      // Image upload & presets handling
+      if (msg.type === 'image') {
+        const uploadInput = card.querySelector('.upload-image-input');
+        if (uploadInput) {
+          uploadInput.addEventListener('change', async (e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              try {
+                const dataUrl = await resizeMessageImageFile(file, 1080);
+                msg.imageUrl = dataUrl;
+                this.mountedBubbleNodes.delete(msg.id);
+                this.renderPipelineList();
+                this.updatePreviewAtTime(this.currentTime);
+              } catch (err) {
+                alert('Failed to load image: ' + err.message);
+              }
+            }
+          });
         }
-        this.renderPipelineList();
-        this.updatePreviewAtTime(this.currentTime);
-      });
+
+        const removeBtn = card.querySelector('.remove-image-btn');
+        if (removeBtn) {
+          removeBtn.addEventListener('click', () => {
+            msg.type = 'text';
+            delete msg.imageUrl;
+            this.mountedBubbleNodes.delete(msg.id);
+            this.renderPipelineList();
+            this.updatePreviewAtTime(this.currentTime);
+          });
+        }
+
+        card.querySelectorAll('.preset-tag-btn').forEach(pBtn => {
+          pBtn.addEventListener('click', () => {
+            const presetKey = pBtn.dataset.preset;
+            if (STUDIO_IMAGE_PRESETS[presetKey]) {
+              msg.imageUrl = STUDIO_IMAGE_PRESETS[presetKey].url;
+              this.mountedBubbleNodes.delete(msg.id);
+              this.renderPipelineList();
+              this.updatePreviewAtTime(this.currentTime);
+            }
+          });
+        });
+      }
 
       card.querySelector('.move-up-btn')?.addEventListener('click', () => {
         if (idx > 0) {
@@ -2036,7 +2249,7 @@ class WhatsAppStudioApp {
 
       card.querySelector('.dup-btn').addEventListener('click', () => {
         const copy = JSON.parse(JSON.stringify(msg));
-        copy.id = `msg_${Date.now()}`;
+        copy.id = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
         this.messages.splice(idx + 1, 0, copy);
         this.renderPipelineList();
         this.restart();
@@ -2224,11 +2437,12 @@ class WhatsAppStudioApp {
         <td>
           <select class="sheet-cell-type">
             <option value="text" ${msg.type === 'text' ? 'selected' : ''}>Text</option>
+            <option value="image" ${msg.type === 'image' ? 'selected' : ''}>Photo / Image</option>
             <option value="voice" ${msg.type === 'voice' ? 'selected' : ''}>Voice Note</option>
           </select>
         </td>
         <td>
-          <input type="text" class="sheet-cell-text" value="${msg.text.replace(/"/g, '&quot;')}">
+          <input type="text" class="sheet-cell-text" value="${(msg.text || '').replace(/"/g, '&quot;')}">
         </td>
         <td>
           <input type="text" class="sheet-cell-time" value="${msg.time}">
@@ -2265,6 +2479,7 @@ class WhatsAppStudioApp {
       const type = tr.querySelector('.sheet-cell-type').value;
       const text = tr.querySelector('.sheet-cell-text').value;
       const time = tr.querySelector('.sheet-cell-time').value;
+      const status = tr.querySelector('.sheet-cell-status').value;
       const delayVal = parseFloat(tr.querySelector('.sheet-cell-delay').value);
       const delay = isNaN(delayVal) ? 0.2 : delayVal;
 
@@ -2277,14 +2492,16 @@ class WhatsAppStudioApp {
         time,
         status,
         delay,
+        imageUrl: existing && existing.imageUrl ? existing.imageUrl : (type === 'image' ? STUDIO_IMAGE_PRESETS.beach.url : undefined),
         audioBlob: existing ? existing.audioBlob : null,
         audioUrl: existing ? existing.audioUrl : null,
         audioDuration: existing ? existing.audioDuration : (type === 'voice' ? 3.5 : 0),
-        waveform: existing && existing.waveform.length ? existing.waveform : AudioManager.generateRealisticWaveform(32)
+        waveform: existing && existing.waveform && existing.waveform.length ? existing.waveform : AudioManager.generateRealisticWaveform(32)
       });
     });
 
     this.messages = updated;
+    this.mountedBubbleNodes.clear();
   }
 
   getTotalDuration() {
@@ -2487,6 +2704,38 @@ class WhatsAppStudioApp {
               </div>
             </div>
           `;
+        } else if (msg.type === 'image') {
+          const imgSrc = msg.imageUrl || STUDIO_IMAGE_PRESETS.beach.url;
+          const hasCaption = msg.text && msg.text.trim().length > 0;
+          const ticksSvg = `<svg width="16" height="11" viewBox="0 0 16 11" xmlns="http://www.w3.org/2000/svg">${msg.status === 'sent' ? `<polyline class="tick-stroke" points="1,5.5 4.5,9 10,2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>` : `<polyline class="tick-stroke" points="1,5.5 4.5,9 10,2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline class="tick-stroke" points="5,5.5 8.5,9 14,2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>`}</svg>`;
+          const ticksHtml = msg.sender === 'sender' ? `<span class="wa-ticks ${msg.status === 'read' ? 'blue' : ''}">${ticksSvg}</span>` : '';
+
+          if (hasCaption) {
+            bubbleWrap.innerHTML = `
+              <div class="wa-bubble ${msg.sender} image-bubble">
+                <div class="wa-image-container">
+                  <img class="wa-bubble-img" src="${imgSrc}" alt="Photo Attachment" loading="eager">
+                </div>
+                <div class="wa-bubble-caption">${msg.text}</div>
+                <div class="wa-bubble-meta">
+                  <span>${msg.time}</span>
+                  ${ticksHtml}
+                </div>
+              </div>
+            `;
+          } else {
+            bubbleWrap.innerHTML = `
+              <div class="wa-bubble ${msg.sender} image-bubble photo-only">
+                <div class="wa-image-container">
+                  <img class="wa-bubble-img" src="${imgSrc}" alt="Photo Attachment" loading="eager">
+                  <div class="wa-bubble-meta overlay">
+                    <span>${msg.time}</span>
+                    ${ticksHtml}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
         } else {
           bubbleWrap.innerHTML = `
             <div class="wa-bubble ${msg.sender}">
